@@ -28,7 +28,7 @@
 
 			<div class="container">
 				<!-- <a class="navbar-brand" href="{{ url('/') }}">Hargrio<span>.</span></a> -->
-				<a class="navbar-brand" href="{{ url('/') }}"><img src="{{ asset('site/images/hargrio_favicon.png') }}" width="50" height="50" alt="Hargrio Logo"> Hargrio<span>.</span></a>
+				<a class="navbar-brand" href="{{ url('/') }}"><img src="{{ asset('site/images/hargrio_favicon.png') }}" width="50" height="50" alt="Hargrio Logo"> <img width="150" height="25" src="{{ asset('site/images/hargrio_logo_white.png') }}" alt="" srcset=""><span>.</span></a>
 
 
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
@@ -139,7 +139,7 @@
 				<div class="row g-5 mb-5">
 					<div class="col-lg-4">
 						<div class="mb-4 footer-logo-wrap">
-							<a class="footer-logo" href="{{ url('/') }}"><img src="{{ asset('site/images/hargrio_favicon.png') }}" width="50" height="50" alt="Hargrio Logo"> Hargrio<span>.</span></a>
+							<a class="footer-logo" href="{{ url('/') }}"><img src="{{ asset('site/images/hargrio_favicon.png') }}" width="50" height="50" alt="Hargrio Logo"> <img width="150" height="25" src="{{ asset('site/images/hargrio_logo_black.png') }}" alt="" srcset=""><span>.</span></a>
 						</div>
 						<p class="mb-4">
 							Hargrio Limited is a UK-based food manufacturing company
