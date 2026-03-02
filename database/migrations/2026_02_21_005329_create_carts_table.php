@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
+            $table->string('variation')->nullable(); // stores weight or variation key
+            $table->decimal('price', 10, 2); // store price at the time of adding to cart
             $table->integer('quantity')->default(1);
             $table->timestamps();
         });

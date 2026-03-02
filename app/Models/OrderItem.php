@@ -2,80 +2,33 @@
 
 namespace App\Models;
 
-use App\Models\Order;
-use App\Models\OrderItem;
-use App\Models\Cart;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class CheckoutController extends Controller
+class OrderItem extends Model
 {
-    public function index()
-    {
-        $cartItems = Cart::with('product')
-            ->where('user_id', Auth::id())
-            ->get();
+    use HasFactory;
 
-        return view('checkout', compact('cartItems'));
+    protected $fillable = [
+        'order_id',
+        'product_id',
+        'quantity',
+        'price',
+    ];
+
+    /**
+     * Get the order that owns this item.
+     */
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
     }
 
-    public function store(Request $request)
+    /**
+     * Get the product associated with this item.
+     */
+    public function product()
     {
-        $cartItems = Cart::with('product')
-            ->where('user_id', Auth::id())
-            ->get();
-
-        if ($cartItems->isEmpty()) {
-            return redirect()->route('cart.index');
-        }
-
-        DB::beginTransaction();
-
-        try {
-
-            $total = $cartItems->sum(function ($item) {
-                return $item->product->price * $item->quantity;
-            });
-
-            $order = Order::create([
-                'user_id'   => Auth::id(),
-                'first_name'=> $request->c_fname,
-                'last_name' => $request->c_lname,
-                'email'     => $request->c_email_address,
-                'phone'     => $request->c_phone,
-                'country'   => $request->c_country,
-                'state'     => $request->c_state_country,
-                'address'   => $request->c_address,
-                'zip'       => $request->c_postal_zip,
-                'total'     => $total,
-            ]);
-
-            foreach ($cartItems as $item) {
-                OrderItem::create([
-                    'order_id'   => $order->id,
-                    'product_id' => $item->product_id,
-                    'quantity'   => $item->quantity,
-                    'price'      => $item->product->price,
-                ]);
-            }
-
-            // Clear cart
-            Cart::where('user_id', Auth::id())->delete();
-            session()->forget('cart');
-
-            DB::commit();
-
-            return redirect()->route('checkout.thankyou');
-
-        } catch (\Exception $e) {
-
-            DB::rollBack();
-            return back()->with('error', 'Something went wrong.');
-        }
-    }
-
-    public function thankyou()
-    {
-        return view('thankyou');
+        return $this->belongsTo(Product::class);
     }
 }

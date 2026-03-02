@@ -35,7 +35,7 @@
         <div class="container">
             <div class="row">
 
-                <!-- Start Column 1 -->
+                <!-- Column 1: Info -->
                 <div class="col-md-12 col-lg-3 mb-5 mb-lg-0">
                     <h2 class="mb-4 section-title">Flour Blend Series</h2>
                     <p class="mb-4">
@@ -44,10 +44,9 @@
                         Suitable for swallow, stiff porridge, puree and drink applications.
                     </p>
                     <p><a href="shop.html" class="btn">View Products</a></p>
-
                 </div> 
-                <!-- End Column 1 -->
 
+                <!-- Products -->
                 @foreach ($latestProducts as $item)
                     <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-10">
                         <a class="product-item" href="javascript:void(0);">
@@ -55,59 +54,66 @@
                             <h3 class="product-title">{{ $item->name }}</h3>
                             <strong class="product-price">From £{{ $item->price }}</strong>
 
-                            <span class="icon-cross add-to-cart" data-id="{{ $item->id }}">
+                            <!-- Cross icon triggers modal -->
+                            <span class="icon-cross" 
+                                data-bs-toggle="modal"
+                                data-bs-target="#productModal{{ $item->id }}">
                                 <img src="{{ asset('site/images/cross.svg') }}" class="img-fluid">
                             </span>
                         </a>
+
+                        <!-- Product Modal -->
+                        <div class="modal fade" id="productModal{{ $item->id }}" tabindex="-1" aria-labelledby="productModalLabel{{ $item->id }}" aria-hidden="true">
+                            <div class="modal-dialog modal-lg modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="productModalLabel{{ $item->id }}">{{ $item->name }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row g-4">
+                                            <div class="col-md-6">
+                                                <img src="{{ asset('site/images/product-1.png') }}" class="img-fluid rounded" alt="{{ $item->name }}">
+                                            </div>
+                                            <div class="col-md-6 d-flex flex-column justify-content-between">
+                                                <div>
+                                                    <p class="price display-6 fw-bold" style="color: #8b670b;" id="modalPrice{{ $item->id }}">
+                                                        £{{ $item->price }}
+                                                    </p>
+
+                                                    @if($item->variations && count($item->variations) > 0)
+                                                        <select id="modalVariation{{ $item->id }}" class="form-select mb-3" style="width:120px;">
+                                                            @foreach($item->variations as $weight => $price)
+                                                                <option value="{{ $weight }}" data-price="{{ $price }}">
+                                                                    {{ $weight }} kg (+£{{ number_format($price, 2) }})
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    @endif
+
+                                                    <input type="number"
+                                                        id="modalQuantity{{ $item->id }}"
+                                                        class="form-control mb-3"
+                                                        value="1"
+                                                        min="1"
+                                                        style="width:100px; height:38px;">
+
+                                                    <button type="button"
+                                                            class="btn btn-primary add-to-cart-modal"
+                                                            data-id="{{ $item->id }}">
+                                                        Add to Cart
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Modal -->
+
                     </div>
                 @endforeach
-
-
-
-                <!-- Start Column 2 -->
-                {{-- <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-                    <a class="product-item" href="cart.html">
-                        <img src="{{ asset('site/images/product-1.png') }}" class="img-fluid product-thumbnail">
-                        <h3 class="product-title">Milla</h3>
-                        <strong class="product-price">From £3.99</strong>
-
-
-                        <span class="icon-cross">
-                            <img src="{{ asset('site/images/cross.svg') }}" class="img-fluid">
-                        </span>
-                    </a>
-                </div>  --}}
-                <!-- End Column 2 -->
-
-                <!-- Start Column 3 -->
-                {{-- <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-                    <a class="product-item" href="cart.html">
-                        <img src="{{ asset('site/images/product-2.png') }}" class="img-fluid product-thumbnail">
-                        <h3 class="product-title">MOAT</h3>
-                        <strong class="product-price">From £2.45</strong>
-
-
-                        <span class="icon-cross">
-                            <img src="{{ asset('site/images/cross.svg') }}" class="img-fluid">
-                        </span>
-                    </a>
-                </div> --}}
-                <!-- End Column 3 -->
-
-                <!-- Start Column 4 -->
-                {{-- <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-                    <a class="product-item" href="cart.html">
-                        <img src="{{ asset('site/images/product-3.png') }}" class="img-fluid product-thumbnail">
-                        <h3 class="product-title">NutriCore</h3>
-                        <strong class="product-price">Available Soon</strong>
-
-
-                        <span class="icon-cross">
-                            <img src="{{ asset('site/images/cross.svg') }}" class="img-fluid">
-                        </span>
-                    </a>
-                </div> --}}
-                <!-- End Column 4 -->
 
             </div>
         </div>
@@ -383,21 +389,30 @@
     </div>
     <!-- End Blog Section -->	
     
+    @auth
     <script>
         $(document).ready(function() {
-            $('.add-to-cart').click(function() {
-                var productId = $(this).data('id');
 
+            // Add to cart from modal
+            $('.add-to-cart-modal').click(function() {
+                var productId = $(this).data('id');
+                var quantity = $('#modalQuantity' + productId).val();
+                var variation = $('#modalVariation' + productId).length ? $('#modalVariation' + productId).val() : null;
+
+                addToCart(productId, quantity, variation);
+            });
+
+            function addToCart(productId, quantity, variation = null) {
                 $.ajax({
-                    url: "/cart/add/" + productId,
+                    url: "{{ url('cart/add') }}/" + productId,
                     type: "POST",
                     data: {
                         _token: "{{ csrf_token() }}",
-                        quantity: 1
+                        quantity: quantity,
+                        variation: variation
                     },
                     success: function(response) {
                         alert(response.message);
-
                         if(response.cart_count !== undefined){
                             if($('#cart-count').length){
                                 $('#cart-count').text(response.cart_count);
@@ -411,8 +426,6 @@
                         }
                     },
                     error: function(xhr) {
-
-                        // If user is not logged in (Laravel returns 401 or 302)
                         if (xhr.status === 401 || xhr.status === 419) {
                             window.location.href = "{{ route('login') }}";
                         } else {
@@ -420,9 +433,20 @@
                         }
                     }
                 });
-            });
+            }
+
+            // Update modal price when variation changes
+            @foreach($latestProducts as $item)
+                $('#modalVariation{{ $item->id }}').on('change', function() {
+                    var selected = $(this).find(':selected');
+                    var price = selected.data('price');
+                    $('#modalPrice{{ $item->id }}').text('£' + parseFloat(price).toFixed(2));
+                });
+            @endforeach
+
         });
     </script>
+    @endauth
 
 
 @endsection

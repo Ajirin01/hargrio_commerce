@@ -27,7 +27,8 @@ return new class extends Migration
 
             $table->decimal('total', 10, 2);
 
-            $table->string('status')->default('pending'); 
+            $table->string('payment_status')->default('pending');
+            $table->string('order_status')->default('pending'); // pending, processing, shipped, completed
             $table->timestamps();
         });
 

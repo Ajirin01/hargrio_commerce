@@ -40,11 +40,11 @@
                     </tr>
                     </thead>
                     <tbody>
-                        @if(session('cart') && count(session('cart')) > 0)
+                        @if($cartItems && count($cartItems) > 0)
 
                             @php $subtotal = 0; @endphp
 
-                            @foreach(session('cart') as $id => $details)
+                            @foreach($cartItems as $id => $details)
 
                                 @php 
                                     $total = $details['price'] * $details['quantity'];

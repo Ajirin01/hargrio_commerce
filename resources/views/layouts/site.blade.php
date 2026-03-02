@@ -37,14 +37,14 @@
 
 				<div class="collapse navbar-collapse" id="navbarsFurni">
 					<ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
-						<li class="nav-item active">
+						<li class="nav-item {{ Request::is('/') || Request::path() == '' ? 'active' : '' }}">
 							<a class="nav-link" href="{{ url('/') }}">Home</a>
 						</li>
-						<li><a class="nav-link" href="{{ url('/shop') }}">Shop</a></li>
-						<li><a class="nav-link" href="{{ url('/about') }}">About Hargrio</a></li>
+						<li class="nav-item {{ Request::is('shop') || Request::path() == '' ? 'active' : '' }}"><a class="nav-link" href="{{ url('/shop') }}">Shop</a></li>
+						<li class="nav-item {{ Request::is('about') || Request::path() == 'about' ? 'active' : '' }}"><a class="nav-link" href="{{ url('/about') }}">About Hargrio</a></li>
 						<!-- <li><a class="nav-link" href="services.html">Services</a></li> -->
-						<li><a class="nav-link" href="{{ url('/blog') }}">Insights</a></li>
-						<li><a class="nav-link" href="{{ url('/contact') }}">Contact us</a></li>
+						<li class="nav-item {{ Request::is('blog') || Request::path() == 'blog' ? 'active' : '' }}"><a class="nav-link" href="{{ url('/blog') }}">Insights</a></li>
+						<li class="nav-item {{ Request::is('contact') || Request::path() == 'contact' ? 'active' : '' }}"><a class="nav-link" href="{{ url('/contact') }}">Contact us</a></li>
 					</ul>
 
 					<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
@@ -58,13 +58,15 @@
 							</li>
 						@else
 							<!-- Authenticated User -->
-							@if(auth()->user()->role === 'user')
+							@if(auth()->user()->role === 'customer')
 								<li class="nav-item position-relative">
 									<a class="nav-link" href="{{ route('cart.index') }}">
 										<img src="{{ asset('site/images/cart.svg') }}" alt="Cart">
 
 										@php
-											$cartCount = count(session('cart', []));
+											$cartCount = \App\Models\Cart::where('user_id', auth()->id())
+																		->distinct('product_id', 'variation')
+																		->count();
 										@endphp
 
 										@if($cartCount > 0)

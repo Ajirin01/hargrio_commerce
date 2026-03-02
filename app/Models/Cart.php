@@ -12,17 +12,40 @@ class Cart extends Model
     protected $fillable = [
         'user_id',
         'product_id',
+        'variation',     // new: stores the selected variation (e.g., weight)
+        'price',         // new: stores price at time of adding
         'quantity',
     ];
 
+    /**
+     * Relationship: Cart belongs to a user
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * Relationship: Cart belongs to a product
+     */
     public function product()
     {
-        return $this->belongsTo(Product::class); // Assuming you have Product model
+        return $this->belongsTo(Product::class);
+    }
+
+    /**
+     * Helper: Get variation label if needed
+     */
+    public function getVariationLabelAttribute()
+    {
+        return $this->variation ? $this->variation . ' kg' : null;
+    }
+
+    /**
+     * Helper: Get total price for this cart line
+     */
+    public function getTotalAttribute()
+    {
+        return $this->price * $this->quantity;
     }
 }
-
