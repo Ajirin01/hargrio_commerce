@@ -22,7 +22,7 @@ Route::get('/', function () {
 Route::get('/shop', function () {
     $products = Product::latest()->get();
     return view('shop', compact('products'));
-});
+})->name('shop.index');
 Route::get('/about', function () {
     return view('about');
 });
@@ -32,9 +32,6 @@ Route::get('/blog', function () {
 Route::get('/contact', function () {
     return view('contact');
 });
-// Route::get('/checkout', function () {
-//     return view('checkout');
-// });
 
 
 Route::get('/product/{product}', [ProductController::class, 'show'])->name('product.show');
@@ -100,9 +97,8 @@ Route::post('/checkout/fail', function () {
     return view('checkout.fail');
 })->name('checkout.fail');
 
-Route::post('/checkout/success', function () {
-    return 'Payment successful. Thank you!';
-})->name('checkout.success');
+Route::post('/checkout/success', [CheckoutController::class, 'thankyou'])
+    ->name('checkout.success');
 
 Route::post('/checkout/tyl/callback', function () {
     return 'Received Tyl notification.';
@@ -113,6 +109,16 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
     Route::patch('/cart/update', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
+});
+
+Route::middleware(['auth'])->group(function () {
+    // Orders list
+    Route::get('/my-orders', [App\Http\Controllers\OrderController::class, 'index'])
+        ->name('orders.index');
+
+    // Order details
+    Route::get('/my-orders/{order}', [App\Http\Controllers\OrderController::class, 'show'])
+        ->name('orders.show');
 });
 
 

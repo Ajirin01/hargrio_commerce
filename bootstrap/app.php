@@ -11,7 +11,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->validateCsrfTokens(except: [
+            'checkout/tyl/callback', // Tyl server POST callback
+            'checkout/success',      // Tyl success POST
+            'checkout/fail',  
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

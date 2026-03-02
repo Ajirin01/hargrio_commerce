@@ -49,18 +49,37 @@
                 <!-- Products -->
                 @foreach ($latestProducts as $item)
                     <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-10">
-                        <a class="product-item" href="javascript:void(0);">
-                            <img src="{{ asset('site/images/product-1.png') }}" class="img-fluid product-thumbnail">
-                            <h3 class="product-title">{{ $item->name }}</h3>
-                            <strong class="product-price">From £{{ $item->price }}</strong>
+                        <div class="product-item">
 
-                            <!-- Cross icon triggers modal -->
+                            <!-- Image links to product detail -->
+                            <a href="{{ route('product.show', $item->id) }}">
+                                <img src="{{ asset('site/images/' . ($item->image ?? 'product-1.png')) }}" 
+                                    class="img-fluid product-thumbnail">
+                            </a>
+
+                            <!-- Title also links to product detail -->
+                            <a href="{{ route('product.show', $item->id) }}" class="text-decoration-none">
+                                <h3 class="product-title">{{ $item->name }}</h3>
+                            </a>
+
+                            @if($item->price)
+                                <strong class="product-price">
+                                    £{{ number_format($item->price, 2) }}
+                                </strong>
+                            @else
+                                <strong class="product-price">Available Soon</strong>
+                            @endif
+
+                            <!-- Cross icon opens modal -->
                             <span class="icon-cross" 
                                 data-bs-toggle="modal"
-                                data-bs-target="#productModal{{ $item->id }}">
-                                <img src="{{ asset('site/images/cross.svg') }}" class="img-fluid">
+                                data-bs-target="#productModal{{ $item->id }}"
+                                style="cursor:pointer;">
+                                <img src="{{ asset('site/images/cross.svg') }}" 
+                                    class="img-fluid">
                             </span>
-                        </a>
+
+                        </div>
 
                         <!-- Product Modal -->
                         <div class="modal fade" id="productModal{{ $item->id }}" tabindex="-1" aria-labelledby="productModalLabel{{ $item->id }}" aria-hidden="true">

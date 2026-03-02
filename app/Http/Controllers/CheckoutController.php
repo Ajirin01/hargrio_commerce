@@ -146,13 +146,19 @@ class CheckoutController extends Controller
         if ($status === 'paid') {
             // Clear cart
             Cart::where('user_id', $order->user_id)->delete();
+
+            // Redirect to thank you page with order_id in query
+            return redirect()->route('checkout.success', ['order_id' => $order->id]);
         }
 
-        return redirect()->route('checkout.thankyou');
+        return redirect()->route('checkout.fail');
     }
 
-    public function thankyou()
+    public function thankyou(Request $request)
     {
-        return view('thankyou');
+        $order_id = $request->oid; // get from query string
+        // return response($order_id);
+
+        return view('checkout.success', compact('order_id'));
     }
 }
