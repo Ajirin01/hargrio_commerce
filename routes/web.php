@@ -25,13 +25,16 @@ Route::get('/shop', function () {
 })->name('shop.index');
 Route::get('/about', function () {
     return view('about');
-});
+})->name('about');
 Route::get('/blog', function () {
     return view('blog');
 });
+
 Route::get('/contact', function () {
     return view('contact');
 });
+Route::post('/contact', [App\Http\Controllers\ContactController::class, 'submitContactForm'])->name('contact.submit');
+Route::get('/test-mail', [\App\Http\Controllers\ContactController::class, 'testMailConnection']);
 
 
 Route::get('/product/{product}', [ProductController::class, 'show'])->name('product.show');
@@ -121,10 +124,40 @@ Route::middleware(['auth'])->group(function () {
         ->name('orders.show');
 });
 
+// admin routes
+Route::get('admin/admin-login', [App\Http\Controllers\Admin\AuthController::class, 'loginForm'])->name('admin.login');
+Route::post('admin/admin-login-handle', [App\Http\Controllers\Admin\AuthController::class, 'login'])->name('admin.login.handle');
+Route::prefix('admin')->middleware(['web', 'admin'])->group(function () {
+    Route::get('dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'dashboard'])->name('admin.dashboard');
+    Route::resource('products', App\Http\Controllers\Admin\ProductsController::class);
+    Route::get('products-bulk-edit',	[App\Http\Controllers\Admin\ProductsController::class, 'productBulkEditCreate'])->name('product.bulk.edit');
+    Route::post('products-bulk-edit',	[App\Http\Controllers\Admin\ProductsController::class, 'productBulkEditStore'])->name('product.bulk.update');
+    Route::get('order/{type}',	[App\Http\Controllers\Admin\OrdersController::class, 'getOrdersByType'])->name('orders_by_type');
+    Route::get('order-details/{order}',	[App\Http\Controllers\Admin\OrdersController::class, 'orderDetails'])->name('order_details');
+    Route::post('update_order_status/{order}', [App\Http\Controllers\Admin\OrdersController::class, 'updateOrderStatus'])->name('update_order_status');
+    Route::resource('brands', App\Http\Controllers\Admin\BrandsController::class);
+    Route::resource('sellers', App\Http\Controllers\Admin\SellerController::class);
+    Route::resource('shops', App\Http\Controllers\Admin\ShopController::class);
+    Route::resource('users', App\Http\Controllers\Admin\UsersController::class);
+    Route::resource('categories', App\Http\Controllers\Admin\CategoriesController::class);
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+    Route::resource('posts', \App\Http\Controllers\Admin\PostController::class);
+    Route::resource('promo-codes', \App\Http\Controllers\Admin\PromoCodeController::class);
+    Route::resource('promotions', \App\Http\Controllers\Admin\PromotionController::class);
+
+    Route::get('newsletters', [NewsletterController::class, 'index'])->name('newsletters.index');
+    Route::post('newsletters/store', [NewsletterController::class, 'store'])->name('newsletters.store');
+    Route::post('newsletters/send', [NewsletterController::class, 'send'])->name('newsletters.send');
+    Route::delete('newsletters/{id}', [NewsletterController::class, 'destroy'])->name('newsletters.destroy');
+
+    // Route::get('admin-login', [App\Http\Controllers\Admin\AuthController::class, 'loginForm'])->name('admin.login');
+    Route::post('admin-logut', function(){
+        Auth::logout();
+        return redirect()->route('admin-login');
+    })->name('admin-logout');
+}); 
+
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

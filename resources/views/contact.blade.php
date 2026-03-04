@@ -83,29 +83,53 @@
 						</div>
 					</div>
 
-					<form>
+					<form action="{{ route('contact.submit') }}" method="POST">
+						@csrf
+
+						{{-- Success Message --}}
+						@if(session('success'))
+							<div class="alert alert-success">{{ session('success') }}</div>
+						@endif
+
+						{{-- Error Messages --}}
+						@if(session('error'))
+							<div class="alert alert-danger">{{ session('error') }}</div>
+						@endif
+
+						{{-- Validation Errors --}}
+						@if ($errors->any())
+							<div class="alert alert-danger">
+								<ul class="mb-0">
+									@foreach ($errors->all() as $error)
+										<li>{{ $error }}</li>
+									@endforeach
+								</ul>
+							</div>
+						@endif
+
 						<div class="row">
-						<div class="col-6">
-							<div class="form-group">
-							<label class="text-black" for="fname">First name</label>
-							<input type="text" class="form-control" id="fname">
+							<div class="col-6">
+								<div class="form-group">
+									<label class="text-black" for="fname">First name</label>
+									<input type="text" name="fname" class="form-control" id="fname" value="{{ old('fname') }}" required>
+								</div>
+							</div>
+							<div class="col-6">
+								<div class="form-group">
+									<label class="text-black" for="lname">Last name</label>
+									<input type="text" name="lname" class="form-control" id="lname" value="{{ old('lname') }}" required>
+								</div>
 							</div>
 						</div>
-						<div class="col-6">
-							<div class="form-group">
-							<label class="text-black" for="lname">Last name</label>
-							<input type="text" class="form-control" id="lname">
-							</div>
-						</div>
-						</div>
+
 						<div class="form-group">
-						<label class="text-black" for="email">Email address</label>
-						<input type="email" class="form-control" id="email">
+							<label class="text-black" for="email">Email address</label>
+							<input type="email" name="email" class="form-control" id="email" value="{{ old('email') }}" required>
 						</div>
 
 						<div class="form-group mb-5">
-						<label class="text-black" for="message">Message</label>
-						<textarea name="" class="form-control" id="message" cols="30" rows="5"></textarea>
+							<label class="text-black" for="message">Message</label>
+							<textarea name="message" class="form-control" id="message" cols="30" rows="5" required>{{ old('message') }}</textarea>
 						</div>
 
 						<button type="submit" class="btn btn-primary-hover-outline">Send Message</button>

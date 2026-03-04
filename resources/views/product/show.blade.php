@@ -14,7 +14,7 @@
                 <!-- Product Images -->
                 <div class="col-md-6">
                     <div class="product-image-card p-3 border rounded shadow-sm">
-                        <img src="{{ asset('site/images/'.$product->image) }}" class="img-fluid rounded" alt="{{ $product->name }}">
+                        <img src="{{ asset('public/uploads/'.$product->image) }}" class="img-fluid rounded" alt="{{ $product->name }}">
                     </div>
                 </div>
 
@@ -24,6 +24,7 @@
                         <h2 class="fw-bold">{{ $product->name }}</h2>
                         {{-- <p class="price display-6 text-success fw-bold" id="productPrice">£{{ number_format($product->price, 2) }}</p> --}}
                         <p class="price display-6 fw-bold" id="productPrice" style="color: #8b670b;">£{{ number_format($product->price, 2) }}</p>
+                        <p>{{ $product->stock === 0 ? 'Out of Stock' : 'In Stock' }}</p>
                         <!-- Tabs for Description / Preparation -->
                         <ul class="nav nav-tabs mb-3" id="productTab" role="tablist">
                             <li class="nav-item" role="presentation">
@@ -45,7 +46,7 @@
                                     <p class="text-muted">{{ $product->short_description }}</p>
                                 @endif
                                 @if($product->long_description)
-                                    <p class="text-secondary">{{ $product->long_description }}</p>
+                                    <p class="text-secondary">{!! $product->long_description !!}</p>
                                 @endif
                             </div>
                             @if($product->preparation_instructions)
@@ -62,7 +63,7 @@
                                 <select id="variation" class="form-select" style="width:120px;">
                                     @foreach($product->variations as $weight => $price)
                                         <option value="{{ $weight }}" data-price="{{ $price }}">
-                                            {{ $weight }} kg (+£{{ number_format($price, 2) }})
+                                            {{ $weight }} kg (£{{ number_format($price, 2) }})
                                         </option>
                                     @endforeach
                                 </select>

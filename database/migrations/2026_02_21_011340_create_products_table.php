@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('preparation_link')->nullable();
             $table->string('image')->nullable();
             $table->boolean('available')->default(true);
+            $table->integer('stock')->nullable();
             $table->timestamps();
         });
     }

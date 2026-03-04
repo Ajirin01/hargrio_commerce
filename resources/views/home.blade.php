@@ -15,8 +15,8 @@
                         </p>
 
                         <p>
-                            <a href="shop.html" class="btn btn-secondary me-2">Explore Flour Blends</a>
-                            <a href="about.html" class="btn btn-white-outline">Our Story</a>
+                            <a href="{{ route('shop.index') }}" class="btn btn-secondary me-2">Explore Flour Blends</a>
+                            <a href="{{ route('about') }}" class="btn btn-white-outline">Our Story</a>
                         </p>
                     </div>
                 </div>
@@ -53,7 +53,7 @@
 
                             <!-- Image links to product detail -->
                             <a href="{{ route('product.show', $item->id) }}">
-                                <img src="{{ asset('site/images/' . ($item->image ?? 'product-1.png')) }}" 
+                                <img src="{{ asset('public/uploads/' . ($item->image ?? 'product-1.png')) }}" 
                                     class="img-fluid product-thumbnail">
                             </a>
 
@@ -92,7 +92,7 @@
                                     <div class="modal-body">
                                         <div class="row g-4">
                                             <div class="col-md-6">
-                                                <img src="{{ asset('site/images/product-1.png') }}" class="img-fluid rounded" alt="{{ $item->name }}">
+                                                <img src="{{ asset('public/uploads/' . ($item->image ?? 'product-1.png')) }}" class="img-fluid rounded" alt="{{ $item->name }}">
                                             </div>
                                             <div class="col-md-6 d-flex flex-column justify-content-between">
                                                 <div>
@@ -104,7 +104,7 @@
                                                         <select id="modalVariation{{ $item->id }}" class="form-select mb-3" style="width:120px;">
                                                             @foreach($item->variations as $weight => $price)
                                                                 <option value="{{ $weight }}" data-price="{{ $price }}">
-                                                                    {{ $weight }} kg (+£{{ number_format($price, 2) }})
+                                                                    {{ $weight }} kg (£{{ number_format($price, 2) }})
                                                                 </option>
                                                             @endforeach
                                                         </select>

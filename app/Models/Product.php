@@ -20,7 +20,8 @@ class Product extends Model
         'long_description',
         'preparation_instructions',
         'preparation_link',
-        'available'
+        'available',
+        'stock',
     ];
 
     protected $casts = [
