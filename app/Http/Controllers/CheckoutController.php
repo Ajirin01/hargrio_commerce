@@ -98,7 +98,7 @@ class CheckoutController extends Controller
 
             // Notify Admin about new order (before payment)
             try {
-                $adminEmail = config('mail.admin_email', 'isholaajirin01@gmail.com');
+                $adminEmail = env('ADMIN_EMAIL');
                 Mail::to($adminEmail)->queue(new OrderNotificationMail($order));
             } catch (\Exception $e) {
                 \Log::error("Admin notification failed: ".$e->getMessage());
@@ -238,7 +238,7 @@ class CheckoutController extends Controller
 
                     // 2️⃣ Notify admin after payment success
                     try {
-                        $adminEmail = config('mail.admin_email', 'isholaajirin01@gmail.com');
+                        $adminEmail = env('ADMIN_EMAIL');
                         Mail::to($adminEmail)->queue(new OrderNotificationMail($order));
                     } catch (\Exception $e) {
                         \Log::error("Admin notification after payment failed: " . $e->getMessage());
