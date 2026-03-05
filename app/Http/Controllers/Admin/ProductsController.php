@@ -13,6 +13,10 @@ use App\Models\ProductCategory as Category;
 use Validator;
 use Session;
 
+use App\Mail\LowStockAlertMail;
+use Illuminate\Support\Facades\Mail;
+
+
 
 class ProductsController extends Controller
 {
@@ -220,5 +224,22 @@ class ProductsController extends Controller
         }
 
         return redirect()->back()->with('success', 'products successfully' . ($request->action === 'update' ? ' updated' : ' deleted'));
+    }
+
+
+    public static function checkLowStock()
+    {
+        // Define low stock threshold
+        $threshold = 5;
+
+        // Get products with low stock
+        $lowProducts = Product::where('quantity', '<=', $threshold)->get();
+
+        if ($lowProducts->isNotEmpty()) {
+            // Send mail to admin
+            Mail::to(env('ADMIN_EMAIL'))->send(new LowStockNotificationMail($lowProducts));
+        }
+
+        return $lowProducts;
     }
 }

@@ -19,6 +19,20 @@
 		<meta name="keywords" content="Hargrio Limited, heritage grains UK, wheat-free flour, alternative grains, teff flour, millet flour, African swallow UK, healthy staple foods">
 	
 		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+		<!--Start of Tawk.to Script-->
+		<script type="text/javascript">
+		var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+		(function(){
+		var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+		s1.async=true;
+		s1.src='https://embed.tawk.to/69a8d2f13d22e31c2f0a1bb2/1jitng0bp';
+		s1.charset='UTF-8';
+		s1.setAttribute('crossorigin','*');
+		s0.parentNode.insertBefore(s1,s0);
+		})();
+		</script>
+		<!--End of Tawk.to Script-->
 	</head>
 
 	<body>
@@ -167,18 +181,18 @@
 						<div class="row links-wrap">
 							<div class="col-6 col-sm-6 col-md-3">
 								<ul class="list-unstyled">
-									<li><a href="#">About Hargrio</a></li>
+									<li><a href="{{ route('about') }}">About Hargrio</a></li>
 									<!-- <li><a href="#">Services</a></li> -->
-									<li><a href="#">Insights</a></li>
-									<li><a href="#">Contact us</a></li>
+									<li><a href="{{ route('blog.index') }}">Insights</a></li>
+									<li><a href="{{ route('contact') }}">Contact us</a></li>
 								</ul>
 							</div>
 
 							<div class="col-6 col-sm-6 col-md-3">
 								<ul class="list-unstyled">
-									<li><a href="#">Support</a></li>
-									<li><a href="#">Knowledge base</a></li>
-									<li><a href="#">Live chat</a></li>
+									<li><a href="{{ route('contact')}}">Support</a></li>
+									<li><a href="{{ route('blog.index') }}">Knowledge base</a></li>
+									<li><a href="https://wa.me/1234567890" target="_blank">Live chat</a></li>
 								</ul>
 							</div>
 
@@ -187,7 +201,10 @@
 									<!-- <li><a href="#">Jobs</a></li>
 									<li><a href="#">Our team</a></li>
 									<li><a href="#">Leadership</a></li> -->
-									<li><a href="#">Privacy Policy</a></li>
+									<li><a href="{{ route('legal.privacy') }}">Privacy Policy</a></li>
+									<li><a href="{{ route('legal.cookies') }}">Cookie Policy</a></li>
+									<li><a href="{{ route('legal.allergy') }}">Allergy Disclaimer</a></li>
+									<li><a href="{{ route('legal.refunds') }}">Refund Policy</a></li>
 								</ul>
 							</div>
 
@@ -213,8 +230,8 @@
 
 						<div class="col-lg-6 text-center text-lg-end">
 							<ul class="list-unstyled d-inline-flex ms-auto">
-								<li class="me-4"><a href="#">Terms &amp; Conditions</a></li>
-								<li><a href="#">Privacy Policy</a></li>
+								<li class="me-4"><a href="{{ route('legal.terms') }}">Terms &amp; Conditions</a></li>
+								<li><a href="{{ route('legal.privacy') }}">Privacy Policy</a></li>
 							</ul>
 						</div>
 

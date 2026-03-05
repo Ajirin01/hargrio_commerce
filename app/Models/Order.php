@@ -19,8 +19,13 @@ class Order extends Model
         'total',
         'payment_status',
         'order_status',
+        'discount',      // optional: store discount amount
+        'promo_code',    // store applied promo code string
     ];
 
+    /**
+     * Order items relation
+     */
     public function items()
     {
         return $this->hasMany(OrderItem::class);

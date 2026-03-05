@@ -1,161 +1,144 @@
 @extends('layouts.admin_base2')
+
 @section('content')
-    <section class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1>Order</h1>
-          </div>
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Order</li>
-            </ol>
-          </div>
-        </div>
-      </div><!-- /.container-fluid -->
-    </section>
+<section class="content-header" style="margin-top: 50px;">
+  <div class="container-fluid d-flex justify-content-between align-items-center">
+    <div><h1>Order Summary</h1></div>
+    <div>
+      <button class="btn btn-success" onclick="printOrder()">Print Receipt / Delivery Document</button>
+    </div>
+  </div>
+</section>
 
-    <!-- Main content -->
-    <!-- Content Wrapper. Contains page content -->
-  
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1>Order Summary</h1>
-          </div>
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="{{ url('admin.dashboard') }}">Home</a></li>
-              <li class="breadcrumb-item active">Order Summary</li>
-            </ol>
-          </div>
-        </div>
-      </div><!-- /.container-fluid -->
-    </section>
+<section class="content">
+  <div class="container-fluid">
+    <div id="printableArea">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="timeline">
 
-    <!-- Main content -->
-    <section class="content">
-      <div class="container-fluid">
+            <!-- Order Date -->
+            <div class="time-label">
+              <span class="bg-red">{{ $order->created_at->format('d M, Y H:i') }}</span>
+            </div>
 
-        <!-- Timelime example  -->
-        <div class="row">
-          <div class="col-md-12">
-            <!-- The time line -->
-            <div class="timeline">
-              <!-- timeline time label -->
-              <div class="time-label">
-                <span class="bg-red">{{ $order->created_at }}</span>
-              </div>
-              <!-- /.timeline-label -->
-              <!-- timeline item -->
-              <div>
-                <i class="fas fa-shopping-order bg-blue"></i>
-                <div class="timeline-item">
-                  <span class="time"><i class="fas fa-clock"></i> SALE #{{$order->order_number}}</span>
-                  <h3 class="timeline-header"><a href="#" onclick="event.preventDefault()">Order List</a></h3>
-
-                  <div class="timeline-body">
-                    <div class="card">
-                      <!-- /.card-header -->
-                      <div class="card-body p-0">
-                        <table class="table table-sm">
-                          <thead>
+            <!-- Order Items -->
+            <div>
+              <i class="fas fa-shopping-cart bg-blue"></i>
+              <div class="timeline-item">
+                <span class="time"><i class="fas fa-clock"></i> SALE #{{ $order->id }}</span>
+                <h3 class="timeline-header"><a href="#">Products Ordered</a></h3>
+                <div class="timeline-body">
+                  <div class="card">
+                    <div class="card-body p-0">
+                      <table class="table table-sm table-bordered mb-0">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>Product</th>
+                            <th>Price (£)</th>
+                            <th>Quantity</th>
+                            <th>Subtotal (£)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @foreach ($order->items as $index => $item)
                             <tr>
-                              <th style="width: 10px">#</th>
-                              <th>Product Name</th>
-                              <th>Product Price (Naira)</th>
-                              <th>Product Quantity</th>
-                              <th>Subtotal</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {{-- {{$order_order}} --}}
-                            @foreach ($order_cart as $order_item)
-                              <tr>
-                                <td>{{$order_item->product_id}}</td>
-                                <td><a href="/product/{{$product->id}}">{{$product->name}}</a>
-                                  <ul style="display: flex; justify-content: left; list-style: none">
-                                      <li style="background-color: {{optional(json_decode($order_item->variations))->color}}; display: block; width: 20px; height: 20px; border-radius: 50px"></li>
-                                      <li style="margin-left: 10px">
-                                          {{Optional(json_decode($order_item->variations))->size}}
-                                      </li>
+                              <td>{{ $index + 1 }}</td>
+                              <td>
+                                {{ $item->product->name ?? 'N/A' }}
+                                @if($item->variations)
+                                  @php $variations = json_decode($item->variations); @endphp
+                                  <ul style="display:flex; list-style:none; padding-left:0; gap:10px; margin:0;">
+                                    @if(!empty($variations->color))
+                                      <li style="width:20px; height:20px; border-radius:50%; background-color: {{ $variations->color }}"></li>
+                                    @endif
+                                    @if(!empty($variations->size))
+                                      <li>Size: {{ $variations->size }}</li>
+                                    @endif
                                   </ul>
-                                </td>
-                                <td>{{$product->price}}</td>
-                                <td>{{$order_item->quantity}}</td>
-                                <td>{{$product->price * $order_item->quantity}}</td>
-                              </tr>
-                            @endforeach
-                          </tbody>
-                        </table>
-                      </div>
-                      <!-- /.card-body -->
+                                @endif
+                              </td>
+                              <td>£{{ number_format($item->price, 2) }}</td>
+                              <td>{{ $item->quantity }}</td>
+                              <td>£{{ number_format($item->price * $item->quantity, 2) }}</td>
+                            </tr>
+                          @endforeach
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                 </div>
               </div>
-              <!-- END timeline item -->
-              <!-- timeline item -->
-              <div>
-                <i class="fas fa-money-bill bg-green"></i>
-                <div class="timeline-item">
-                  <span class="time"><i class="fas fa-clock"></i>  SALE #{{$order->order_number}}</span>
-                  <h3 class="timeline-header no-border"><a href="#">Total with shipping</a> &#x20A6; {{$order->total_with_shipping}}</h3>
-                </div>
-              </div>
-              <!-- END timeline item -->
-              <!-- timeline item -->
-              <div>
-                <i class="fas fa-money-bill bg-yellow"></i>
-                <div class="timeline-item">
-                  <span class="time"><i class="fas fa-money-bill"></i> {{$order->payment_method}}</span>
-                  <h3 class="timeline-header"><a href="#">Payment Method</a></h3>
-
-                  {{-- <h3 class="timeline-header"><a href="#">{{$order->payment_method}}</a></h3> --}}
-                    
-                  {{-- </div> --}}
-                  
-                </div>
-              </div>
-              <!-- END timeline item -->
-              <!-- timeline item -->
-              <div>
-                <i class="fas fa-shipping-fast bg-blue"></i>
-                <div class="timeline-item">
-                  <span class="time"><i class="fas fa-shipping-fast"></i> Shipping Address</span>
-                  <h3 class="timeline-header"><a href="#">Shipping Address</a></h3>
-                  <ul>
-                    <li>
-                        <strong>Full Name: </strong>{{optional($order->user)->name?? $order->shipping_name}}
-                    </li>
-                    <li>
-                        <strong>Phone Number: </strong>{{optional($order->user)->phone?? $order->shipping_phone}}
-                    </li>
-                    <li>
-                        <strong>Email Address: </strong>{{optional($order->user)->email?? $order->shipping_email}}
-                    </li>
-                    <li>
-                        <strong>Street Address: </strong>{{$address}}
-                    </li>
-                </ul>
-                  
-                </div>
-              </div>
-              <!-- END timeline item -->
             </div>
+
+            <!-- Totals -->
+            <div>
+              <i class="fas fa-money-bill bg-green"></i>
+              <div class="timeline-item">
+                <span class="time"><i class="fas fa-clock"></i> Total Summary</span>
+                <h3 class="timeline-header no-border">
+                  @php
+                    $subtotal = $order->items->sum(fn($i) => $i->price * $i->quantity);
+                  @endphp
+                  Subtotal: £{{ number_format($subtotal, 2) }}<br>
+                  @if($order->discount)
+                    Promo ({{ $order->promo_code ?? 'N/A' }}): -{{ $order->discount }}%<br>
+                  @endif
+                  <strong>Total Payable: £{{ number_format($order->total, 2) }}</strong>
+                </h3>
+              </div>
+            </div>
+
+            <!-- Payment Method -->
+            <div>
+              <i class="fas fa-credit-card bg-yellow"></i>
+              <div class="timeline-item">
+                <span class="time"><i class="fas fa-money-bill"></i> Payment Method</span>
+                <h3 class="timeline-header">{{ strtoupper($order->payment_method ?? 'CARD') }}</h3>
+              </div>
+            </div>
+
+            <!-- Shipping Address -->
+            <div>
+              <i class="fas fa-shipping-fast bg-blue"></i>
+              <div class="timeline-item">
+                <span class="time"><i class="fas fa-truck"></i> Shipping Address</span>
+                <h3 class="timeline-header">Details</h3>
+                <ul style="padding-left:0; list-style:none;">
+                  <li><strong>Name:</strong> {{ $order->first_name }} {{ $order->last_name }}</li>
+                  <li><strong>Phone:</strong> {{ $order->phone }}</li>
+                  <li><strong>Email:</strong> {{ $order->email }}</li>
+                  <li><strong>Address:</strong> {{ $order->address }}, {{ $order->state }}, {{ $order->country }}, {{ $order->zip }}</li>
+                </ul>
+              </div>
+            </div>
+
           </div>
-          <!-- /.col -->
         </div>
       </div>
-      <!-- /.timeline -->
-
-    </section>
-    <!-- /.content -->
+    </div>
   </div>
-  <!-- /.content-wrapper -->
+</section>
 
-  
+<script>
+  function printOrder() {
+    let printContents = document.getElementById('printableArea').innerHTML;
+    let originalContents = document.body.innerHTML;
+
+    document.body.innerHTML = printContents;
+    window.print();
+    document.body.innerHTML = originalContents;
+    window.location.reload(); // optional, restore page JS
+  }
+</script>
+
+<style>
+  @media print {
+    .btn { display: none; }
+    body { -webkit-print-color-adjust: exact; }
+    .timeline { font-size: 12pt; }
+  }
+</style>
+
 @endsection

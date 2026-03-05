@@ -38,40 +38,44 @@
 			<div class="container">
 				<div class="row">
 
-					<div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0">
-						<div class="post-entry">
-							<a href="#" class="post-thumbnail"><img src="{{ asset('site/images/post-1.jpg') }}" alt="Image" class="img-fluid"></a>
-							<div class="post-content-entry">
-								<h3><a href="#">Understanding Heritage Grains in Modern Diets</a></h3>
-								<!-- <div class="meta">
-									<span>by <a href="#">Kristin Watson</a></span> <span>on <a href="#">Dec 19, 2021</a></span>
-								</div> -->
-							</div>
-						</div>
-					</div>
+					@forelse($posts as $post)
 
-					<div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0">
-						<div class="post-entry">
-							<a href="#" class="post-thumbnail"><img src="{{ asset('site/images/post-2.jpg') }}" alt="Image" class="img-fluid"></a>
-							<div class="post-content-entry">
-								<h3><a href="#">Wheat-Free Alternatives for Everyday Cooking</a></h3>
-								<!-- <div class="meta">
-									<span>by <a href="#">Robert Fox</a></span> <span>on <a href="#">Dec 15, 2021</a></span>
-								</div> -->
-							</div>
-						</div>
-					</div>
+						<div class="col-12 col-sm-6 col-md-4 mb-4">
+							<div class="post-entry">
 
-					<div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0">
-						<div class="post-entry">
-							<a href="#" class="post-thumbnail"><img src="{{ asset('site/images/post-3.jpg') }}" alt="Image" class="img-fluid"></a>
-							<div class="post-content-entry">
-								<h3><a href="#">Preparing Smooth Swallow with Hargrio Heritage Grain Blends</a></h3>
-								<!-- <div class="meta">
-									<span>by <a href="#">Kristin Watson</a></span> <span>on <a href="#">Dec 12, 2021</a></span>
-								</div> -->
+								<a href="{{ route('blog.show', $post->slug) }}" class="post-thumbnail">
+									<img src="{{ asset('public/' . ($post->feature_image ?? 'post-1.jpg')) }}" 
+										alt="{{ $post->title }}" 
+										class="img-fluid">
+								</a>
+
+								<div class="post-content-entry">
+									<h3>
+										<a href="{{ route('blog.show', $post->slug) }}">
+											{{ $post->title }}
+										</a>
+									</h3>
+
+									<p class="text-muted">
+										{{ \Illuminate\Support\Str::limit($post->excerpt, 100) }}
+									</p>
+
+									<small class="text-muted">
+										{{ $post->created_at->format('F d, Y') }}
+									</small>
+								</div>
+
 							</div>
 						</div>
+
+					@empty
+						<div class="col-12 text-center">
+							<p class="text-muted">No blog posts available at the moment.</p>
+						</div>
+					@endforelse
+
+					<div class="mt-5 d-flex justify-content-center">
+						{{ $posts->links() }}
 					</div>
 
 				</div>

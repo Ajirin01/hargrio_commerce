@@ -24,7 +24,7 @@ class OrderUpdateMail extends Mailable
 
     public function build()
     {
-        return $this->subject('Order Update - ' . $this->order->order_number)
+        return $this->subject('Order Update - #' . $this->order->id)
                     ->view('emails.orders.update');
     }
 }

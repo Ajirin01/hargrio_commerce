@@ -53,12 +53,12 @@
 
                                 <tr>
                                     <td class="product-thumbnail">
-                                        <img src="{{ asset('storage/'.$details['image']) }}" 
+                                        <img src="{{ asset('public/uploads/'.$details['product']->image) }}" 
                                             alt="Image" class="img-fluid" width="80">
                                     </td>
 
                                     <td class="product-name">
-                                        <h2 class="h5 text-black">{{ $details['name'] }}</h2>
+                                        <h2 class="h5 text-black">{{ $details['product']->name }}</h2>
                                     </td>
 
                                     <td>£{{ number_format($details['price'], 2) }}</td>

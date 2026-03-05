@@ -8,20 +8,23 @@ use App\Models\Order;
 use App\Models\Earning;
 use Session;
 
+use App\Mail\OrderUpdateMail;
+use Illuminate\Support\Facades\Mail;
+
 class OrdersController extends Controller
 {
     public function getOrdersByType($type){
         if($type == 'all'){
             $orders = Order::all();
         }else if($type == 'pending'){
-            $orders = Order::where('status', 'pending')->get();
+            $orders = Order::where('order_status', 'pending')->get();
         }
         else if($type == 'shipped'){
-            $orders = Order::where('status', 'shipped')->get();
+            $orders = Order::where('order_status', 'shipped')->get();
         }else if($type == 'cancelled'){
-            $orders = Order::where('status', 'canceled')->get();
+            $orders = Order::where('order_status', 'cancelled')->get();
         }else if($type == 'completed'){
-            $orders = Order::where('status', 'completed')->get();
+            $orders = Order::where('order_status', 'completed')->get();
         }else{
             $orders = Order::all();
         }
@@ -29,33 +32,47 @@ class OrdersController extends Controller
         return view('Admin.Orders.orders_list',['orders'=> $orders, 'type'=> $type]);
     }
 
-    public function orderDetails($id){
-        $order = Order::find($id);
+    public function orderDetails($id)
+    {
+        // Load order with items and products
+        $order = Order::with('items.product')->findOrFail($id);
 
-        $order_cart = json_decode($order->order_details);
-        $order_shipping_address = $order->shipping_address;
-        // return response()->json(json_decode($order));
-        
-        return view('Admin.Orders.order_details',['order' => $order, 'order_cart'=> $order_cart, 'address'=> $order_shipping_address]);
+        // Shipping address (you already have it stored in fields like address, state, zip, country)
+        $shippingAddress = [
+            'name'    => $order->first_name . ' ' . $order->last_name,
+            'phone'   => $order->phone,
+            'email'   => $order->email,
+            'address' => $order->address,
+            'state'   => $order->state,
+            'zip'     => $order->zip,
+            'country' => $order->country,
+        ];
+
+        // Return view with Eloquent collections
+        return view('Admin.Orders.order_details', [
+            'order'            => $order,
+            'orderItems'       => $order->items, // collection of OrderItem models
+            'shippingAddress'  => $shippingAddress,
+        ]);
     }
 
-    public function updateOrderStatus($id, Request $request){
-        // return response()->json([$id, $request->all()]);
+    public function updateOrderStatus($id, Request $request)
+    {
+        $request->validate([
+            'status' => 'required|string'
+        ]);
 
-        if($request->status === "completed"){
-            $order = Order::find($id);
+        $order = Order::findOrFail($id);
 
-            $order_details = json_decode($order->order_details);
+        // Update order status
+        $order->order_status = $request->status;
+        $order->save();
 
-            $data = [];
-            
-            foreach ($order_details as $order_detail) {
-                $product = $order_detail->product;
-                $price = $order_detail->price;
-            }
-            // return response()->json($data);
-        }
-        // Order::find($id)->update($request->all());
-        return redirect()->back();
+        // Send email to customer
+        Mail::to($order->email)
+            ->send(new OrderUpdateMail($order, $request->status));
+
+        return redirect()->back()
+            ->with('success', 'Order status updated and customer notified.');
     }
 }

@@ -195,6 +195,24 @@
                   </li>
                 </ul>
               </li>
+
+              <li class="nav-item has-treeview">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon fa fa-list-alt"></i>
+                  <p>
+                    Newsletters
+                    <i class="fas fa-angle-left right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="{{ route('newsletters.index')}}" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>All Newsletters Subscribers</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
             @endcan
 
             @can('isOrderManager')
@@ -462,19 +480,19 @@
                         <td><a href="pages/examples/invoice.html">{{ $order->id }}</a></td>
                         <td>{{ Carbon\Carbon::parse($order->created_at)->diffForHumans() }}</td>
                         @if ($order->payment_status == 'paid')
-                          <td><span class="badge badge-success">{{ $order->status }}</span></td>
+                          <td><span class="badge badge-success">{{ $order->payment_status }}</span></td>
                         @endif
 
                         @if ($order->payment_status == 'pending')
-                          <td><span class="badge badge-warning">{{ $order->status }}</span></td>
+                          <td><span class="badge badge-warning">{{ $order->payment_status }}</span></td>
                         @endif
 
                         @if ($order->payment_status == 'cancelled')
-                          <td><span class="badge badge-danger">{{ $order->status }}</span></td>
+                          <td><span class="badge badge-danger">{{ $order->payment_status }}</span></td>
                         @endif
 
                         @if ($order->payment_status == 'complete')
-                          <td><span class="badge badge-primary">{{ $order->status }}</span></td>
+                          <td><span class="badge badge-primary">{{ $order->payment_status }}</span></td>
                         @endif
 
                         {{-- @if ($order->payment_status == 'confirmed')
@@ -524,7 +542,7 @@
                 @foreach ($latest_products as $product)
                   <li class="item">
                     <div class="product-img">
-                      <img src="{{ asset('site/images/'.$product->image) }}" alt="Product Image" class="img-size-50">
+                      <img src="{{ asset('public/uploads/'.$product->image) }}" alt="Product Image" class="img-size-50">
                     </div>
                     <div class="product-info">
                       <a href="javascript:void(0)" class="product-title">{{ $product->name }}

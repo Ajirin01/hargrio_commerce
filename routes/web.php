@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\Admin\NewsletterController;
 use Illuminate\Support\Facades\Route;
 
 use App\Models\Product;
@@ -12,12 +13,50 @@ use App\Http\Controllers\CheckoutController;
 use Illuminate\Support\Facades\Http;
 use App\Helpers\TylHelper;
 
-Route::get('/', function () {
-    $categories = ProductCategory::with('products')->get();
-    $latestProducts = Product::latest()->take(8)->get();
+use App\Models\Promotion;
+use Carbon\Carbon;
+use App\Models\ProductCategory as Category;
+use App\Models\Post;
 
-    return view('home', compact('categories', 'latestProducts'));
-    // return view('home');
+use App\Http\Controllers\Admin\ProductsController;
+use App\Http\Controllers\LegalController;
+
+
+Route::get('/', function () {
+
+    $categories = ProductCategory::with('products')->get();
+
+    $firstCategory = Category::where('slug', 'heritage-flour-blends')
+        ->with('products')
+        ->first();
+
+    $latestProducts = $firstCategory ? $firstCategory->products : collect();
+
+    $otherCategories = Category::where('slug', '!=', 'heritage-flour-blends')
+        ->with('products')
+        ->get();
+
+    $promotions = Promotion::where('status', 'active')
+        ->whereDate('start_date', '<=', Carbon::today())
+        ->whereDate('end_date', '>=', Carbon::today())
+        ->latest()
+        ->get();
+
+    // ✅ Fetch latest published blog posts
+    $posts = Post::where('status', 'published')
+                ->latest()
+                ->take(3)
+                ->get();
+
+    return view('home', compact(
+        'categories',
+        'latestProducts',
+        'promotions',
+        'otherCategories',
+        'firstCategory',
+        'posts' // 👈 add this
+    ));
+
 })->name('home');
 Route::get('/shop', function () {
     $products = Product::latest()->get();
@@ -26,15 +65,28 @@ Route::get('/shop', function () {
 Route::get('/about', function () {
     return view('about');
 })->name('about');
+
 Route::get('/blog', function () {
-    return view('blog');
-});
+
+    $posts = Post::where('status', 'published')
+                ->latest()
+                ->paginate(9); // 9 per page
+
+    return view('blog', compact('posts'));
+
+})->name('blog.index');
+Route::get('/blog/{slug}', function ($slug) {
+    $post = Post::where('slug', $slug)->firstOrFail();
+    return view('blog-post', compact('post'));
+})->name('blog.show');
 
 Route::get('/contact', function () {
     return view('contact');
-});
+})->name('contact');
 Route::post('/contact', [App\Http\Controllers\ContactController::class, 'submitContactForm'])->name('contact.submit');
 Route::get('/test-mail', [\App\Http\Controllers\ContactController::class, 'testMailConnection']);
+Route::post('/wholesale-inquiry', [\App\Http\Controllers\ContactController::class, 'submitWholesaleForm'])
+    ->name('wholesale.inquiry');
 
 
 Route::get('/product/{product}', [ProductController::class, 'show'])->name('product.show');
@@ -59,8 +111,6 @@ Route::middleware('auth')->group(function () {
     Route::match(['get', 'post'], '/checkout/tyl/callback', [CheckoutController::class, 'tylCallback'])
         ->name('checkout.tyl.callback');
 });
-
-
 
 Route::get('/test-tyl', function () {
     $txndatetime = now()->timezone('Europe/London')->format('Y:m:d-H:i:s');
@@ -157,12 +207,26 @@ Route::prefix('admin')->middleware(['web', 'admin'])->group(function () {
     })->name('admin-logout');
 }); 
 
+Route::post('/checkout/apply-promo', [CheckoutController::class, 'applyPromo'])->name('checkout.applyPromo');
+Route::post('/checkout/apply-promo-ajax', [CheckoutController::class, 'applyPromoAjax'])->name('checkout.applyPromoAjax');
 
+Route::get('/admin/check-low-stock', [ProductsController::class, 'checkLowStock'])
+    ->name('admin.checkLowStock');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::get('/privacy-policy', [LegalController::class, 'privacy'])->name('legal.privacy');
+
+Route::get('/terms-and-conditions', [LegalController::class, 'terms'])->name('legal.terms');
+
+Route::get('/refunds-and-returns', [LegalController::class, 'refunds'])->name('legal.refunds');
+
+Route::get('/cookie-policy', [LegalController::class, 'cookies'])->name('legal.cookies');
+
+Route::get('/food-allergy-disclaimer', [LegalController::class, 'allergy'])->name('legal.allergy');
 
 require __DIR__.'/auth.php';

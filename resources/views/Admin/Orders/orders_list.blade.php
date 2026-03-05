@@ -34,8 +34,8 @@
                     <th>Order ID</th>
                     {{-- <th>Wholeorder Stock</th> --}}
                     <th>Total Amount</th>
-                    <th>Payment Method</th>
-                    <th>Status</th>
+                    <th>Payment Status</th>
+                    <th>Order Status</th>
                     <th>Actions</th>
                   </tr>
                   </thead>
@@ -43,9 +43,9 @@
                     @foreach ($orders as $order)
                     <tr>
                         <td>{{$order->id}}</td>
-                        <td>&#x20A6;{{$order->total_with_shipping}}</td>
-                        <td>{{$order->payment_method}}</td>
-                        <td>{{$order->status}}</td>
+                        <td>£{{$order->total}}</td>
+                        <td>{{$order->payment_status}}</td>
+                        <td>{{$order->order_status}}</td>
                         <td>
                           <form id="update-empty" action="{{ route('update_order_status', $order->id) }}" method="post">
                             @csrf
@@ -80,8 +80,8 @@
                     <th>Order ID</th>
                     {{-- <th>Wholeorder Stock</th> --}}
                     <th>Total Amount</th>
-                    <th>Payment Method</th>
-                    <th>Status</th>
+                    <th>Payment Status</th>
+                    <th>Order Status</th>
                     <th>Actions</th>
                   </tr>
                   </tfoot>

@@ -29,6 +29,8 @@ return new class extends Migration
 
             $table->string('payment_status')->default('pending');
             $table->string('order_status')->default('pending'); // pending, processing, shipped, completed
+            $table->decimal('discount', 10, 2)->default(0); // optional: store discount amount
+            $table->string('promo_code')->nullable(); // store applied promo code string
             $table->timestamps();
         });
 

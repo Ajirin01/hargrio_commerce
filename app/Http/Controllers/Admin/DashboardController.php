@@ -56,7 +56,7 @@ class DashboardController extends Controller
         for ($i=0; $i < count($sales); $i++) { 
             for ($j=0; $j < 12; $j++) { 
                 if (Carbon::parse($sales[$i]->created_at)->month == $j+1) {
-                    $total = $sales[$i]->total_with_shipping;
+                    $total = $sales[$i]->total;
                     array_push($month_sale[$j], $total);
                     array_push($months, Carbon::parse($sales[$i]->created_at)->format('M'));
                 }
@@ -99,7 +99,7 @@ class DashboardController extends Controller
     private function getSaleTotal($sales){
         $dis = 0;
         for ($i=0; $i < count($sales); $i++) { 
-            $total = $sales[$i]->total_with_shipping;
+            $total = $sales[$i]->total;
             $discount = 0;
             $dis = $dis + ($total - $discount);
         }

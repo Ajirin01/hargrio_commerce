@@ -65,12 +65,13 @@
 						<div class="subscription-form">
 							<h3 class="d-flex align-items-center"><span class="me-1"><img src="{{ asset('site/images/envelope-outline.svg') }}" alt="Image" class="img-fluid"></span><span>Subscribe to Newsletter</span></h3>
 
-							<form action="#" class="row g-3">
+							<form action="{{ route('newsletters.store') }}" method="POST" class="row g-3">
+								@csrf
 								<div class="col-auto">
-									<input type="text" class="form-control" placeholder="Enter your name">
+									<input type="text" name="name" class="form-control" placeholder="Enter your name">
 								</div>
 								<div class="col-auto">
-									<input type="email" class="form-control" placeholder="Enter your email">
+									<input type="email" name="email" class="form-control" placeholder="Enter your email">
 								</div>
 								<div class="col-auto">
 									<button class="btn btn-primary">
@@ -107,18 +108,18 @@
 						<div class="row links-wrap">
 							<div class="col-6 col-sm-6 col-md-3">
 								<ul class="list-unstyled">
-									<li><a href="#">About Hargrio</a></li>
+									<li><a href="{{ route('about') }}">About Hargrio</a></li>
 									<!-- <li><a href="#">Services</a></li> -->
-									<li><a href="#">Insights</a></li>
-									<li><a href="#">Contact us</a></li>
+									<li><a href="{{ route('blog.index') }}">Insights</a></li>
+									<li><a href="{{ route('contact') }}">Contact us</a></li>
 								</ul>
 							</div>
 
 							<div class="col-6 col-sm-6 col-md-3">
 								<ul class="list-unstyled">
-									<li><a href="#">Support</a></li>
-									<li><a href="#">Knowledge base</a></li>
-									<li><a href="#">Live chat</a></li>
+									<li><a href="{{ route('contact')}}">Support</a></li>
+									<li><a href="{{ route('blog.index') }}">Knowledge base</a></li>
+									<li><a href="https://wa.me/1234567890" target="_blank">Live chat</a></li>
 								</ul>
 							</div>
 
@@ -127,7 +128,10 @@
 									<!-- <li><a href="#">Jobs</a></li>
 									<li><a href="#">Our team</a></li>
 									<li><a href="#">Leadership</a></li> -->
-									<li><a href="#">Privacy Policy</a></li>
+									<li><a href="{{ route('legal.privacy') }}">Privacy Policy</a></li>
+									<li><a href="{{ route('legal.cookies') }}">Cookie Policy</a></li>
+									<li><a href="{{ route('legal.allergy') }}">Allergy Disclaimer</a></li>
+									<li><a href="{{ route('legal.refunds') }}">Refund Policy</a></li>
 								</ul>
 							</div>
 
@@ -153,8 +157,9 @@
 
 						<div class="col-lg-6 text-center text-lg-end">
 							<ul class="list-unstyled d-inline-flex ms-auto">
-								<li class="me-4"><a href="#">Terms &amp; Conditions</a></li>
-								<li><a href="#">Privacy Policy</a></li>
+								<li class="me-4"><a href="{{ route('legal.terms') }}">Terms &amp; Conditions</a></li>
+								<li><a href="{{ route('legal.privacy') }}">Privacy Policy</a></li>
+								
 							</ul>
 						</div>
 

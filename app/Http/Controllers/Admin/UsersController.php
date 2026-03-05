@@ -12,7 +12,7 @@ class UsersController extends Controller
 {
     public function index()
     {
-        $users = User::where('role', '!=', 'user')->get();
+        $users = User::where('role', '!=', 'customer')->get();
         return view('Admin.Users.users-dashboard',['users'=> $users]);
     }
 
@@ -23,31 +23,28 @@ class UsersController extends Controller
 
     public function store(Request $request)
     {
-        $data = [];
-        $data['name'] = $request->name;
-        $data['role'] = $request->role;
-        $data['email'] = $request->email;
-        $data['phone'] = $request->phone;
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name'  => 'required|string|max:255',
+            'email'      => 'required|email|unique:users,email',
+            'phone'      => 'required|string|max:20',
+            'password'   => 'required|confirmed|min:6',
+            'role'       => 'required|string',
+            'is_active'  => 'required|boolean',
+        ]);
 
-        if($request->password != $request->password_confirmation){
-            return redirect()->back()->with('error','Error, Passwords do not match!');
-        }else{
-            $data['password'] = Hash::make($request->password);
-            // return response()->json(Auth::attempt(['email'=>$request->email,'password'=>$request->password]));
-            $user = User::where('email',$request->email)->orWhere('name',$request->name)->first();
-            // return response()->json($user == null);
-            if($user != null){
-                return redirect()->back()->with('error', 'Error! Staff '.$request->name.' Already Exit');
-            }else{
-                $create_user = User::create($data);
-                if($create_user){
-                    return redirect()->back()->with('msg','Success! Staff '.$request->name.' created!');
-                }
-            }
-            
-        }
-        // return response()->json($request->all());
-        // User::create($request->all());
+        $user = User::create([
+            'first_name' => $request->first_name,
+            'last_name'  => $request->last_name,
+            'email'      => $request->email,
+            'phone'      => $request->phone,
+            'password'   => Hash::make($request->password),
+            'role'       => $request->role,
+            'is_active'  => $request->is_active,
+        ]);
+
+        return redirect()->back()
+            ->with('msg', 'Success! Staff created successfully.');
     }
 
     public function show($id)
@@ -70,8 +67,27 @@ class UsersController extends Controller
      */
     public function update(Request $request, $id)
     {
-        User::find($id)->update($request->all());
-        return redirect()->back()->with('msg','User Record Updated!');
+        $user = User::findOrFail($id);
+
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name'  => 'required|string|max:255',
+            'email'      => 'required|email|unique:users,email,' . $id,
+            'phone'      => 'required|string|max:20',
+            'role'       => 'required|string',
+            'is_active'  => 'required|boolean',
+        ]);
+
+        $user->update([
+            'first_name' => $request->first_name,
+            'last_name'  => $request->last_name,
+            'email'      => $request->email,
+            'phone'      => $request->phone,
+            'role'       => $request->role,
+            'is_active'  => $request->is_active,
+        ]);
+
+        return redirect()->back()->with('msg', 'User Record Updated!');
     }
 
     /**
