@@ -57,8 +57,8 @@
     <div class="container">
         <div class="row">
             <div class="col-md-12 col-lg-3 mb-5 mb-lg-0 scroll-reveal">
-                <h2 class="mb-4 section-title">{{ $firstCategory->name }}</h2>
-                <p class="mb-4">{{ $firstCategory->description }}</p>
+                <h2 class="mb-4 section-title">{{ optional($firstCategory)->name }}</h2>
+                <p class="mb-4">{{ optional($firstCategory)->description }}</p>
                 <p><a href="{{ route('shop.index') }}" class="btn">View Products</a></p>
             </div>
 

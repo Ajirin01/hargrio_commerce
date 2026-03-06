@@ -26,13 +26,13 @@ Route::get('/', function () {
 
     $categories = ProductCategory::with('products')->get();
 
-    $firstCategory = Category::where('slug', 'heritage-flour-blends')
+    $firstCategory = Category::where('slug', 'flour-blend-series')
         ->with('products')
         ->first();
 
     $latestProducts = $firstCategory ? $firstCategory->products : collect();
 
-    $otherCategories = Category::where('slug', '!=', 'heritage-flour-blends')
+    $otherCategories = Category::where('slug', '!=', 'flour-blend-series')
         ->with('products')
         ->get();
 
