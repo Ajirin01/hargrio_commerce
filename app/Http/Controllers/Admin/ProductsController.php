@@ -71,9 +71,9 @@ class ProductsController extends Controller
 
         // Status handling
         if (Auth::user()->role == 'seller') {
-            $requestData['status'] = 'pending';
+            $requestData['available'] = 0;
         } else {
-            $requestData['status'] = $request->has('status') ? 'active' : 'inactive';
+            $requestData['available'] = $request->has('available') ? 1 : 0;
         }
 
         // Size variations only
@@ -151,7 +151,7 @@ class ProductsController extends Controller
         $requestData = $request->all();
 
         // Status handling
-        $requestData['status'] = $request->has('status') ? 'active' : 'inactive';
+        $requestData['available'] = $request->has('available') ? 1 : 0;
 
         // Slug
         $requestData['slug'] = \Str::slug($requestData['name']);

@@ -2,8 +2,14 @@
 
 @section('content')
     <!-- Start Hero Section -->
-    <div class="hero">
-        <div class="container">
+    <div class="hero position-relative overflow-hidden">
+        {{-- Background Image (bokeh grains) --}}
+        <img src="{{ asset('site/images/hero-grains-bokeh.png') }}" class="hero-bg-img" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;filter:brightness(0.35);">
+        {{-- Layered Gradient Overlay --}}
+        <div class="hero-overlay-gradient" style="position:absolute;inset:0;z-index:1;background:linear-gradient(135deg, rgba(27, 24, 23, 0.95) 0%, rgba(44, 34, 31, 0.65) 40%, rgba(92,71,66,0.55) 65%, rgba(30,18,14,0.85) 100%);"></div>
+        {{-- Noise grain --}}
+        <div style="position:absolute;inset:0;z-index:1;background-image:url(&quot;data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E&quot;);opacity:0.04;pointer-events:none;"></div>
+        <div class="container position-relative" style="z-index:3;">
             <div class="row justify-content-between">
                 <div class="col-lg-5">
                     <div class="intro-excerpt">
@@ -18,10 +24,32 @@
 
     <div class="untree_co-section product-section before-footer-section">
         <div class="container">
+            <!-- Category Filter Row -->
+            <div class="row mb-5 justify-content-center text-center">
+                <div class="col-12">
+                    <div class="d-flex flex-wrap justify-content-center gap-2">
+                        <a href="{{ route('shop.index') }}" class="btn {{ !isset($currentCategory) ? 'btn-primary' : 'btn-outline-primary' }} rounded-pill px-4">All Products</a>
+                        @foreach($categories as $category)
+                            <a href="{{ route('shop.index', ['category' => $category->id]) }}" class="btn {{ (isset($currentCategory) && $currentCategory->id == $category->id) ? 'btn-primary' : 'btn-outline-primary' }} rounded-pill px-4">
+                                {{ $category->name }}
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
             <div class="row">
                 @foreach($products as $product)
+                    @php $isComingSoon = empty($product->price) || !$product->available; @endphp
                     <div class="col-12 col-md-4 mb-5">
-                        <div class="product-item">
+                        <div class="product-item position-relative overflow-hidden">
+                            @if($isComingSoon)
+                                <!-- Dark Overlay for Coming Soon -->
+                                <div class="position-absolute w-100 h-100 top-0 start-0 d-flex flex-column align-items-center justify-content-center" style="background: rgba(0,0,0,0.55); backdrop-filter: blur(2px); cursor: not-allowed; z-index: 10; border-radius: inherit;">
+                                    <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" style="margin-bottom: 15px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                    <h4 class="text-white fw-bold m-0" style="font-family: var(--font-family-sans-alt);">Coming Soon</h4>
+                                </div>
+                            @endif
 
                             <!-- Image links to product detail -->
                             <a href="{{ route('product.show', $product->id) }}">

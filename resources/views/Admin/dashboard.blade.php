@@ -198,6 +198,24 @@
 
               <li class="nav-item has-treeview">
                 <a href="#" class="nav-link">
+                  <i class="nav-icon fa fa-image"></i>
+                  <p>
+                    Visual Journey
+                    <i class="fas fa-angle-left right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="{{ route('admin.gallery.index')}}" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Manage Gallery</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+
+              <li class="nav-item has-treeview">
+                <a href="#" class="nav-link">
                   <i class="nav-icon fa fa-list-alt"></i>
                   <p>
                     Newsletters
@@ -404,27 +422,21 @@
           <!-- /.card-header -->
           <div class="card-body">
             <div class="row">
-              <div class="col-md-12">
                 <p class="text-center">
-                  @php
-                      try{
-                        echo "<strong>Sales: ".$months[0]."-".$months[count($months)-1]."</strong>";
-                      }catch(Exception $e){
-                        echo "<strong>Sales:   </strong>";
-                      }
-                  @endphp
-                  
+                  <strong>Sales: {{ $months[0] ?? '' }} - {{ end($months) ?? '' }}</strong>
+                  <br>
                   @if (Auth::user()->role == 'admin')
-                  <span class="text-danger">Total:</span> <strong>£ {{ number_format( $sales_total ) }}.00</strong></strong>  
+                  <span class="text-danger">Total:</span> <strong>£ {{ number_format($sales_total, 2) }}</strong>
                   @endif
-
-
                 </p>
 
                 <div class="chart">
-                  <!-- Sales Chart Canvas -->
                   <canvas id="salesChart" height="180" style="height: 300px;"></canvas>
                 </div>
+
+                {{-- Hidden inputs to pass data to JS --}}
+                <input type="hidden" id="chartMonths" value="{{ json_encode($months) }}">
+                <input type="hidden" id="chartSalesData" value="{{ json_encode($sales_data) }}">
                 <!-- /.chart-responsive -->
               </div>
               <!-- /.col -->
@@ -668,6 +680,57 @@
       });
       // Summernote
       $('.textarea').summernote();
+
+      // Sales Chart Initialization
+      var salesChartCanvas = $('#salesChart').get(0).getContext('2d');
+      var months = JSON.parse($('#chartMonths').val() || '[]');
+      var salesData = JSON.parse($('#chartSalesData').val() || '[]');
+
+      var salesChartData = {
+        labels: months,
+        datasets: [
+          {
+            label: 'Sales (£)',
+            backgroundColor: 'rgba(60,141,188,0.9)',
+            borderColor: 'rgba(60,141,188,0.8)',
+            pointRadius: true,
+            pointColor: '#3b8bba',
+            pointStrokeColor: 'rgba(60,141,188,1)',
+            pointHighlightFill: '#fff',
+            pointHighlightStroke: 'rgba(60,141,188,1)',
+            data: salesData
+          }
+        ]
+      };
+
+      var salesChartOptions = {
+        maintainAspectRatio: false,
+        responsive: true,
+        legend: {
+          display: false
+        },
+        scales: {
+          xAxes: [{
+            gridLines: {
+              display: false
+            }
+          }],
+          yAxes: [{
+            gridLines: {
+              display: false
+            },
+            ticks: {
+              beginAtZero: true
+            }
+          }]
+        }
+      };
+
+      new Chart(salesChartCanvas, {
+        type: 'line',
+        data: salesChartData,
+        options: salesChartOptions
+      });
     });
   </script>
   <script>
