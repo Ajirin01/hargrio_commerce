@@ -330,8 +330,8 @@
                   </form>
                 </li>
               @else
-                <li><a class="dropdown-item py-2 fw-medium" href="{{ route('login') }}">Login</a></li>
-                <li><a class="dropdown-item py-2 fw-medium" href="{{ route('register') }}">Register</a></li>
+                <li><a class="dropdown-item py-2 fw-medium" href="{{ route('login') }}" style="color: var(--brand-primary) !important;">Login</a></li>
+                <li><a class="dropdown-item py-2 fw-medium" href="{{ route('register') }}" style="color: var(--brand-primary) !important;">Register</a></li>
               @endauth
             </ul>
           </li>
@@ -360,25 +360,30 @@
           <p class="mb-0 small">Get baking tips, new product announcements, and exclusive offers.</p>
         </div>
         <div class="col-lg-6">
-          <form action="{{ route('newsletters.store') }}" method="POST" class="w-100">
+          <form action="{{ route('newsletters.store') }}" method="POST" class="w-100 mt-2">
             @csrf
-            <div class="row g-2">
-              <div class="col-12 col-md-6 mb-2">
-                <input type="text" name="name" class="form-control rounded-pill border-0 px-4 py-3 w-100 shadow-sm"
-                      placeholder="Your Name" required>
+            <style>
+              .newsletter-pill .form-control::placeholder {
+                color: rgba(255, 255, 255, 0.6) !important;
+              }
+              .newsletter-pill .form-control:focus {
+                background-color: transparent !important;
+                color: #fff !important;
+                box-shadow: none !important;
+              }
+            </style>
+            <div class="d-flex rounded-pill overflow-hidden newsletter-pill" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);">
+              <input type="text" name="name" class="form-control border-0 bg-transparent px-3 px-md-4 py-3 shadow-none fs-6" style="color: #fff; width: 40%;" placeholder="Your Name" required>
+              
+              <div class="d-flex align-items-center">
+                <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.2);"></div>
               </div>
-              <div class="col-12 col-md-6 mb-2">
-                <input type="email" name="email" class="form-control rounded-pill border-0 px-4 py-3 w-100 shadow-sm"
-                      placeholder="Email Address" required>
-              </div>
-              <div class="col-12 mt-2">
-                <button type="submit" class="btn w-100 rounded-pill fw-bold px-4 py-3 d-flex justify-content-center align-items-center gap-2 shadow-sm"
-                        style="background-color: var(--brand-secondary); border-color: var(--brand-secondary); color: var(--brand-primary); letter-spacing: 1px; transition: transform 0.2s ease, box-shadow 0.2s ease;"
-                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 20px rgba(0,0,0,0.1)';" 
-                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
-                  SUBSCRIBE TO NEWSLETTER <i class="fa fa-paper-plane ms-2"></i>
-                </button>
-              </div>
+              
+              <input type="email" name="email" class="form-control border-0 bg-transparent px-3 px-md-4 py-3 shadow-none fs-6" style="color: #fff; width: 60%;" placeholder="Your email" required>
+              
+              <button type="submit" class="btn px-3 px-md-4" style="background-color: #8a9d80; color: #fff; border-radius: 0; border: none; transition: background-color 0.2s ease;" onmouseover="this.style.backgroundColor='#798a70'" onmouseout="this.style.backgroundColor='#8a9d80'">
+                <i class="fa fa-arrow-right"></i>
+              </button>
             </div>
           </form>
         </div>
