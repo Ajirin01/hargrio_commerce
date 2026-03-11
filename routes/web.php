@@ -69,25 +69,35 @@ Route::get('/shop', function (Illuminate\Http\Request $request) {
     // Fetch all active categories with their products
     $categories = ProductCategory::where('status', 'active')->get();
     
-    // Check if category is requested
+    // Check if category or search is requested
     $categoryId = $request->query('category');
+    $searchTerm = $request->query('search');
     
+    $query = Product::query();
+
     if ($categoryId) {
         // Find category and its products
         $currentCategory = ProductCategory::find($categoryId);
         if ($currentCategory) {
-            $products = $currentCategory->products;
+            $query->where('category_id', $categoryId);
         } else {
-            $products = Product::latest()->get();
             $currentCategory = null;
         }
     } else {
-        // No category filter, fetch all
-        $products = Product::latest()->get();
         $currentCategory = null;
     }
 
-    return view('shop', compact('products', 'categories', 'currentCategory'));
+    if ($searchTerm) {
+        $query->where(function($q) use ($searchTerm) {
+            $q->where('name', 'like', '%' . $searchTerm . '%')
+              ->orWhere('short_description', 'like', '%' . $searchTerm . '%')
+              ->orWhere('long_description', 'like', '%' . $searchTerm . '%');
+        });
+    }
+
+    $products = $query->latest()->get();
+
+    return view('shop', compact('products', 'categories', 'currentCategory', 'searchTerm'));
 })->name('shop.index');
 Route::get('/about', function () {
     return view('about');

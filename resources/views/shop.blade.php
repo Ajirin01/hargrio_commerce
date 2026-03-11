@@ -38,8 +38,16 @@
                 </div>
             </div>
 
+            @if(isset($searchTerm) && $searchTerm)
+                <div class="row mb-4">
+                    <div class="col-12 text-center">
+                        <h4 class="font-serif" style="color: var(--brand-primary);">Search Results for "{{ $searchTerm }}"</h4>
+                    </div>
+                </div>
+            @endif
+
             <div class="row">
-                @foreach($products as $product)
+                @forelse($products as $product)
                     @php $isComingSoon = empty($product->price) || !$product->available; @endphp
                     <div class="col-12 col-md-4 mb-5">
                         <div class="product-item position-relative overflow-hidden">
@@ -143,7 +151,13 @@
                         </div>
                         <!-- End Modal -->
                     </div>
-                @endforeach
+                @empty
+                    <div class="col-12 text-center py-5">
+                        <h5 class="text-muted font-serif">No products found matching your search criteria.</h5>
+                        <p class="text-muted mb-4">Try adjusting your search or browse our categories.</p>
+                        <a href="{{ route('shop.index') }}" class="btn btn-primary rounded-pill px-4">Clear Search</a>
+                    </div>
+                @endforelse
             </div>
         </div>
     </div>

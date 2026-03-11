@@ -62,6 +62,13 @@
       stroke: rgba(255,255,255,0.88);
     }
 
+    @media (min-width: 992px) {
+      .custom-navbar .custom-navbar-nav .nav-item {
+        margin-left: 0.25rem !important;
+        margin-right: 0.25rem !important;
+      }
+    }
+
     /* Hamburger: white bars on transparent nav */
     .custom-navbar .navbar-toggler {
       border-color: rgba(255,255,255,0.35);
@@ -176,7 +183,8 @@
       background: rgba(255,255,255,0.15) !important;
       color: #fff !important;
       border: 1.5px solid rgba(255,255,255,0.55) !important;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
+      white-space: nowrap;
       transition: all 0.25s ease;
     }
     .btn-nav-shop:hover {
@@ -336,9 +344,19 @@
             </ul>
           </li>
 
+          <!-- Search Button -->
+          <li class="nav-item ms-md-2 mt-3 mt-md-0 d-flex align-items-center">
+            <a class="nav-link" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#searchModal" aria-label="Search">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </a>
+          </li>
+
           <!-- Shop CTA pill -->
           <li class="nav-item ms-md-2 mt-3 mt-md-0">
-            <a class="btn btn-nav-shop px-4 py-2 rounded-pill fw-bold" href="{{ url('/shop') }}" style="color: var(--brand-light) !important;">Shop Now</a>
+            <a class="btn btn-nav-shop px-3 py-2 rounded-pill fw-bold" href="{{ url('/shop') }}" style="color: var(--brand-light) !important;">Shop Now</a>
           </li>
         </ul>
       </div>
@@ -399,7 +417,7 @@
             </a>
           </div>
           <p class="mb-4" style="line-height: 1.8;">
-            Preserving tradition naturally. We transform under-commercialised heritage grains into high-quality, nutritious blends for modern households.
+            Nourishing the Future with Africa’s Ancient Grains. We transform under-commercialised heritage grains into high-quality, nutritious blends for modern households.
           </p>
           <ul class="list-unstyled d-flex gap-3 mb-0">
             <li><a href="#" class="text-white opacity-75 text-decoration-none"><span class="fa fa-brands fa-facebook-f fs-5"></span></a></li>
@@ -448,7 +466,7 @@
           <p class="mb-0 small">&copy; <script>document.write(new Date().getFullYear());</script> Hargrio Limited. All Rights Reserved.</p>
         </div>
         <div class="col-md-6 text-center text-md-end">
-          <p class="mb-0 small opacity-50">Preserving tradition naturally.</p>
+          <p class="mb-0 small opacity-50">Nourishing the Future with Africa’s Ancient Grains.</p>
         </div>
       </div>
 
@@ -565,6 +583,31 @@
                       <div class="mt-5 text-end border-top pt-4">
                           <button type="button" class="btn btn-link text-muted text-decoration-none me-3 fw-bold" data-bs-dismiss="modal">Cancel</button>
                           <button type="submit" class="btn btn-primary px-5 py-3 rounded-pill fw-bold" style="background-color: var(--brand-primary); border-color: var(--brand-primary); letter-spacing: 1px;">Submit Inquiry</button>
+                      </div>
+                  </form>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  {{-- ========= SEARCH MODAL ========= --}}
+  <div class="modal fade" id="searchModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content rounded-lg border-0" style="box-shadow: 0 25px 50px rgba(0,0,0,0.15);">
+              <div class="modal-body p-4">
+                  <div class="d-flex justify-content-between align-items-center mb-4">
+                      <h5 class="modal-title font-serif fw-bold" style="color: var(--brand-primary);">Search Products</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <form method="GET" action="{{ route('shop.index') }}">
+                      <div class="input-group">
+                          <input type="text" name="search" class="form-control form-control-lg border-primary bg-light" placeholder="What are you looking for?" required>
+                          <button class="btn btn-primary px-4" type="submit" style="background-color: var(--brand-primary); border-color: var(--brand-primary);">
+                              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                  <circle cx="11" cy="11" r="8"></circle>
+                                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                              </svg>
+                          </button>
                       </div>
                   </form>
               </div>
