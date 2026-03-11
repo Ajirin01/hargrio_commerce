@@ -46,7 +46,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('categories.store') }}" method="POST">
+                    <form action="{{ route('categories.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
                         {{-- Category Name --}}
@@ -60,6 +60,18 @@
                                 value="{{ old('name') }}"
                                 required
                             >
+                        </div>
+
+                        {{-- Image Upload --}}
+                        <div class="form-group mb-3">
+                            <label>Category Image</label>
+                            <input 
+                                type="file" 
+                                class="form-control" 
+                                name="image" 
+                                accept="image/*"
+                            >
+                            <small class="text-muted">Recommended size: 800x600px. Max: 2MB.</small>
                         </div>
 
                         {{-- Description --}}

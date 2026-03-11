@@ -79,7 +79,7 @@ Route::get('/shop', function (Illuminate\Http\Request $request) {
         // Find category and its products
         $currentCategory = ProductCategory::find($categoryId);
         if ($currentCategory) {
-            $query->where('category_id', $categoryId);
+            $query->where('product_category_id', $categoryId);
         } else {
             $currentCategory = null;
         }

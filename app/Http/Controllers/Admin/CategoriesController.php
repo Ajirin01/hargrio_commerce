@@ -36,6 +36,7 @@ class CategoriesController extends Controller
         $data = $request->validate([
             'name' => 'required|min:3|max:191',
             'description' => 'nullable|max:1000',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         // Generate slug
@@ -51,6 +52,13 @@ class CategoriesController extends Controller
 
         // Status handling
         $data['status'] = $request->has('status') ? 'active' : 'inactive';
+
+        // Image handling
+        if ($request->hasFile('image')) {
+            $imageName = time() . '.' . $request->image->extension();
+            $request->image->move(public_path('uploads'), $imageName);
+            $data['image'] = $imageName;
+        }
 
         $createCategory = Category::create($data);
 
@@ -72,6 +80,7 @@ class CategoriesController extends Controller
         $data = $request->validate([
             'name' => 'required|min:3|max:191',
             'description' => 'nullable|max:1000',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         // Regenerate slug if name changed
@@ -92,6 +101,18 @@ class CategoriesController extends Controller
         // Status handling
         $data['status'] = $request->has('status') ? 'active' : 'inactive';
 
+        // Image handling
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($category->image && file_exists(public_path('uploads/' . $category->image))) {
+                unlink(public_path('uploads/' . $category->image));
+            }
+            
+            $imageName = time() . '.' . $request->image->extension();
+            $request->image->move(public_path('uploads'), $imageName);
+            $data['image'] = $imageName;
+        }
+
         $updateCategory = $category->update($data);
 
         return redirect()->back()->with(
@@ -108,6 +129,11 @@ class CategoriesController extends Controller
     public function destroy($id)
     {
         $category = Category::findOrFail($id);
+
+        // Delete associated image
+        if ($category->image && file_exists(public_path('uploads/' . $category->image))) {
+            unlink(public_path('uploads/' . $category->image));
+        }
 
         $deleteCategory = $category->delete();
 

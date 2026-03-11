@@ -356,7 +356,7 @@
                         <h3 class="product-title font-serif text-center mb-3">Hargrio Foods</h3>
                         <p class="text-muted small text-center px-2 mb-4 flex-grow-1">Transforming traditional ingredients into modern food solutions for households.</p>
                         <div class="mt-auto w-100 text-center">
-                            <button onclick="const grid = document.getElementById('hargrio-foods-products'); grid.classList.toggle('d-none'); if(!grid.classList.contains('d-none')){ grid.scrollIntoView({behavior: 'smooth', block: 'start'}); }" class="btn btn-outline-primary btn-sm rounded-pill px-4">Learn More</button>
+                            <button onclick="const cats = document.getElementById('hargrio-foods-categories'); cats.classList.toggle('d-none'); document.querySelectorAll('.category-product-grid').forEach(g => g.classList.add('d-none')); document.querySelectorAll('.cat-card-item').forEach(c => { c.style.borderColor = '#eaeaea'; c.style.boxShadow = 'none'; }); if(!cats.classList.contains('d-none')){ cats.scrollIntoView({behavior: 'smooth', block: 'center'}); }" class="btn btn-outline-primary btn-sm rounded-pill px-4">Learn More</button>
                         </div>
                     </div>
                 </div>
@@ -390,112 +390,55 @@
                 </div>
             </div>
 
-            <!-- Hidden Products Grid for Hargrio Foods -->
-            <div id="hargrio-foods-products" class="row justify-content-center mt-4 d-none">
+            <!-- Hidden Categories Grid for Hargrio Foods -->
+            <div id="hargrio-foods-categories" class="row justify-content-center mt-5 d-none pb-4 border-bottom">
                 <div class="col-12 text-center mb-4">
-                    <h3 class="font-serif" style="color: var(--brand-primary);">Hargrio Foods Collection</h3>
+                    <h3 class="font-serif" style="color: var(--brand-primary);">Explore Our Collections</h3>
+                    <p class="text-muted">Select a category below to view products</p>
                 </div>
-                @foreach ($latestProducts as $item)
-                    @php 
-                        $isComingSoon = empty($item->price) || !$item->available || ($item->category && $item->category->status === 'inactive'); 
-                    @endphp
-                    <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-10 scroll-reveal" style="--reveal-delay: {{ $loop->index * 120 }}ms">
-                        <div class="product-item rounded p-4 h-100 d-flex flex-column align-items-center position-relative" style="background: var(--brand-light); border: 1px solid #eaeaea; overflow: hidden;">
-
-                            @if($isComingSoon)
-                                <!-- Dark Overlay for Coming Soon -->
-                                <div class="position-absolute w-100 h-100 top-0 start-0 d-flex flex-column align-items-center justify-content-center" style="background: rgba(0,0,0,0.55); backdrop-filter: blur(2px); cursor: not-allowed; z-index: 10;">
-                                    <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" style="margin-bottom: 15px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                                    <h4 class="text-white fw-bold m-0" style="font-family: var(--font-family-sans-alt);">Coming Soon</h4>
-                                </div>
-                            @endif
-
-                            <a href="{{ $isComingSoon ? 'javascript:void(0);' : route('product.show', $item->id) }}" class="mb-4 overflow-hidden rounded-circle" style="width: 200px; height: 200px; display: block;">
-                                <img src="{{ asset('public/uploads/' . ($item->image ?? 'product-1.png')) }}"
-                                    class="img-fluid product-thumbnail w-100 h-100" style="object-fit: cover; border-radius: 0; box-shadow: none;">
-                            </a>
-                            <a href="{{ $isComingSoon ? 'javascript:void(0);' : route('product.show', $item->id) }}" class="text-decoration-none text-center">
-                                <h3 class="product-title font-serif">{{ $item->name }}</h3>
-                            </a>
-                            <p class="text-muted small text-center px-2 mb-4 flex-grow-1">{{ \Illuminate\Support\Str::limit($item->short_description ?? 'Premium stone-ground flour naturally rich in nutrients.', 60) }}</p>
-
-                            <div class="mt-auto w-100 text-center">
-                                @if(!$isComingSoon)
-                                    <strong class="product-price d-block mb-3" style="font-size: 1.25rem;">£{{ number_format($item->price, 2) }}</strong>
-                                    <button class="btn btn-outline-primary btn-sm rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#productModal{{ $item->id }}">Learn More</button>
+                @foreach($categories as $category)
+                    <div class="col-6 col-md-4 mb-4">
+                        <div id="cat-card-{{ $category->id }}" onclick="showCategoryProducts({{ $category->id }})" class="cat-card-item product-item rounded p-3 h-100 d-flex flex-column align-items-center position-relative transition-hover" style="cursor: pointer; background: var(--brand-light); border: 2px solid #eaeaea; transition: all 0.3s ease;">
+                            <div class="mb-3 d-flex align-items-center justify-content-center" style="height: 120px; width: 100%;">
+                                @if($category->image)
+                                    <img src="{{ asset('public/uploads/' . $category->image) }}" class="img-fluid shadow-sm" style="max-height: 120px; max-width: 100%; border-radius: 15px; object-fit: contain;" alt="{{ $category->name }}">
                                 @else
-                                    <strong class="product-price d-block mb-3 text-muted">Available Soon</strong>
-                                    <a href="{{ route('contact') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-4" style="font-family: var(--font-family-sans-alt);">Notify Me</a>
+                                    <div class="d-flex align-items-center justify-content-center bg-white rounded" style="width:100%; height:100%; border:1px dashed #ccc;">
+                                        <span class="text-muted small">No Image</span>
+                                    </div>
                                 @endif
                             </div>
-                            <span class="icon-cross d-none"></span>
-                        </div>
-
-                        <div class="modal fade" id="productModal{{ $item->id }}" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-lg modal-dialog-centered">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">{{ $item->name }}</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="row g-4">
-                                            <div class="col-md-6">
-                                                <img src="{{ asset('public/uploads/' . ($item->image ?? 'product-1.png')) }}" class="img-fluid rounded" alt="{{ $item->name }}">
-                                            </div>
-                                            <div class="col-md-6 d-flex flex-column justify-content-between">
-                                                <div>
-                                                    <p class="price display-6 fw-bold" style="color: var(--brand-secondary);" id="modalPrice{{ $item->id }}">
-                                                        £{{ $item->price }}
-                                                    </p>
-                                                    @if($item->variations && count($item->variations) > 0)
-                                                        <select id="modalVariation{{ $item->id }}" class="form-select mb-3" style="width:120px;">
-                                                            @foreach($item->variations as $weight => $price)
-                                                                <option value="{{ $weight }}" data-price="{{ $price }}">
-                                                                    {{ $weight }} kg (£{{ number_format($price, 2) }})
-                                                                </option>
-                                                            @endforeach
-                                                        </select>
-                                                    @endif
-                                                    <input type="number" id="modalQuantity{{ $item->id }}" class="form-control mb-3" value="1" min="1" style="width:100px; height:38px;">
-                                                    <button type="button" class="btn btn-primary add-to-cart-modal" data-id="{{ $item->id }}">Add to Cart</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <h4 class="product-title font-serif text-center mb-2 text-dark" style="font-size: 1.1rem;">{{ $category->name }}</h4>
                         </div>
                     </div>
                 @endforeach
             </div>
-        </div>
-    </div>
 
-    {{-- ========= OTHER CATEGORIES ========= --}}
-    @if($otherCategories->count())
-        @foreach($otherCategories as $index => $category)
-            <div class="product-section py-5 {{ $index % 2 == 0 ? 'bg-white' : '' }}" {!! $index % 2 != 0 ? 'style="background: var(--bg-choc);"' : '' !!}>
-                <div class="container py-4">
-                    <div class="row mb-5 text-center scroll-reveal">
+            <!-- Hidden Product Grids per Category -->
+            <div id="categories-products-container">
+                @foreach($categories as $category)
+                    <div id="category-products-{{ $category->id }}" class="category-product-grid row justify-content-center mt-5 d-none">
                         @php
                             $isCategoryComingSoon = $category->status === 'inactive' || ($category->products->count() > 0 && $category->products->filter(function ($p) {
                                 return empty($p->price) || !$p->available; })->count() == $category->products->count());
                         @endphp
-                        <div class="col-12 z-1">
-                            <div class="d-inline-flex align-items-center mb-4 px-4 py-2 rounded-pill" style="background: rgba(245,245,245,0.7); border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
+                        <div class="col-12 z-1 text-center mb-5">
+                            <div class="d-inline-flex align-items-center px-4 py-2 rounded-pill" style="background: rgba(245,245,245,0.7); border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
                                 <svg class="me-2" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: #9da3ad;"><path d="M11 2v9a2 2 0 0 1-2 2H6m5-11v11a2 2 0 0 1-2 2H6m5-13V2"/><path d="M18 21v-4a2 2 0 0 0-2-2h-2v6h4z"/><path d="M16 15V2.5A.5.5 0 0 0 15.5 2H14"/></svg>
                                 <span class="fw-bold fs-4 ms-1" style="color: #8c929a; font-family: var(--font-family-sans-alt);">{{ $category->name }}</span>
                                 @if($isCategoryComingSoon)
                                     <span class="badge rounded-pill ms-3 bg-opacity-75" style="background-color: #79a175; font-size: 0.8rem; font-family: var(--font-family-sans-alt); padding: 0.5rem 0.9rem;">Coming Soon</span>
                                 @endif
                             </div>
+                            @if($category->description)
+                                <p class="text-muted mt-3 mb-0">{{ $category->description }}</p>
+                            @endif
                         </div>
-                    </div>
-
-                    <div class="row justify-content-center">
-                        @forelse ($category->products as $item)
-                            @php $isComingSoon = empty($item->price) || !$item->available || $category->status === 'inactive'; @endphp
+                        
+                        @forelse($category->products as $item)
+                            @php 
+                                $isComingSoon = empty($item->price) || !$item->available || $category->status === 'inactive'; 
+                            @endphp
                             <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-10 scroll-reveal" style="--reveal-delay: {{ $loop->index * 120 }}ms">
                                 <div class="product-item rounded-lg p-0 h-100 d-flex flex-column position-relative" style="background: #fff; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.03); overflow: hidden;">
 
@@ -517,28 +460,72 @@
                                         @endif
                                     </div>
 
-                                    <div class="p-4 d-flex flex-column flex-grow-1 text-center <?php            echo $isComingSoon ? 'opacity-50' : ''; ?>">
+                                    <div class="p-4 d-flex flex-column flex-grow-1 text-center <?php echo $isComingSoon ? 'opacity-50' : ''; ?>">
                                         <a href="{{ $isComingSoon ? 'javascript:void(0);' : route('product.show', $item->id) }}" class="text-decoration-none">
                                             <h3 class="product-title font-serif mb-2" style="font-size: 1.5rem; color: var(--brand-primary);">{{ $item->name }}</h3>
                                         </a>
                                         <p class="text-muted small mt-2 mb-4 flex-grow-1" style="line-height: 1.6;">{{ \Illuminate\Support\Str::limit($item->short_description ?? 'Authentic heritage grains stone-ground to perfection.', 80) }}</p>
 
-                                        <div class="mt-auto w-100">
-                                            <a href="{{ $isComingSoon ? 'javascript:void(0);' : route('product.show', $item->id) }}" class="btn btn-primary w-100 rounded-pill py-2 fw-medium" style="background-color: var(--brand-primary); border-color: var(--brand-primary); font-family: var(--font-family-sans-alt); font-size: 0.9rem;">Learn More</a>
+                                        <div class="mt-auto w-100 text-center">
+                                            @if(!$isComingSoon)
+                                                <strong class="product-price d-block mb-3" style="font-size: 1.25rem;">£{{ $item->price ? number_format((float)$item->price, 2) : '0.00' }}</strong>
+                                                <a href="{{ route('product.show', $item->id) }}" class="btn btn-primary w-100 rounded-pill py-2 fw-medium" style="background-color: var(--brand-primary); border-color: var(--brand-primary); font-family: var(--font-family-sans-alt); font-size: 0.9rem;">Learn More</a>
+                                            @else
+                                                <strong class="product-price d-block mb-3 text-muted">Available Soon</strong>
+                                                <a href="{{ route('contact') }}" class="btn btn-outline-secondary w-100 rounded-pill py-2 fw-medium" style="font-family: var(--font-family-sans-alt); font-size: 0.9rem;">Notify Me</a>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         @empty
-                            <div class="col-12 text-center">
-                                <p class="text-muted mt-4">We are currently crafting new products for this collection.</p>
+                            <div class="col-12 text-center py-4">
+                                <p class="text-muted">No products available in this category yet.</p>
                             </div>
                         @endforelse
                     </div>
-                </div>
+                @endforeach
             </div>
-        @endforeach
-    @endif
+
+            <script>
+                function showCategoryProducts(categoryId) {
+                    // Hide all product grids
+                    document.querySelectorAll('.category-product-grid').forEach(function(grid) {
+                        grid.classList.add('d-none');
+                        // Remove revealed class so they animate again next time
+                        grid.querySelectorAll('.scroll-reveal').forEach(function(el) {
+                            el.classList.remove('revealed');
+                        });
+                    });
+                    // Show the selected one
+                    const target = document.getElementById('category-products-' + categoryId);
+                    if (target) {
+                        target.classList.remove('d-none');
+                        target.scrollIntoView({behavior: 'smooth', block: 'start'});
+                        
+                        // Force a reflow and then add the revealed class so the animation plays
+                        setTimeout(() => {
+                            target.querySelectorAll('.scroll-reveal').forEach(function(el) {
+                                el.classList.add('revealed');
+                            });
+                        }, 50);
+                    }
+                    
+                    // Highlight active category card
+                    document.querySelectorAll('.cat-card-item').forEach(function(card) {
+                        card.style.borderColor = '#eaeaea';
+                        card.style.boxShadow = 'none';
+                    });
+                    const activeCard = document.getElementById('cat-card-' + categoryId);
+                    if(activeCard) {
+                        activeCard.style.borderColor = 'var(--brand-primary)';
+                        activeCard.style.boxShadow = '0 10px 30px rgba(0,0,0,0.08)';
+                    }
+                }
+            </script>
+        </div>
+    </div>
+
 
     {{-- ========= BENEFITS ========= --}}
     <div class="benefits-section py-5" style="background: var(--bg-sage);">

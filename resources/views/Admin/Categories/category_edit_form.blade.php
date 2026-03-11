@@ -46,7 +46,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('categories.update', $category->id) }}" method="POST">
+                    <form action="{{ route('categories.update', $category->id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PATCH')
 
@@ -60,6 +60,25 @@
                                 value="{{ old('name', $category->name) }}"
                                 required
                             >
+                        </div>
+
+                        {{-- Image Upload --}}
+                        <div class="form-group mb-3">
+                            <label>Category Image</label>
+                            
+                            @if($category->image)
+                                <div class="mb-2">
+                                    <img src="{{ asset('public/uploads/' . $category->image) }}" alt="Current Image" style="max-height: 100px; border-radius: 8px;">
+                                </div>
+                            @endif
+                            
+                            <input 
+                                type="file" 
+                                class="form-control" 
+                                name="image" 
+                                accept="image/*"
+                            >
+                            <small class="text-muted">Leave blank to keep existing image. Recommended size: 800x600px. Max: 2MB.</small>
                         </div>
 
                         {{-- Description --}}
